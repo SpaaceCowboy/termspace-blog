@@ -1,0 +1,12 @@
+@import "tailwindcss";
+@import "./tokens.css";
+* { border-color: var(--border); }
+html { scroll-behavior: smooth; }
+body { background: var(--background); color: var(--foreground); font-family: var(--font-geist), sans-serif; text-rendering: optimizeLegibility; }
+::selection { background: oklch(70% .11 45 / .35); }
+a, button, input, select { transition-duration: var(--duration-fast); transition-property: color, background-color, border-color, box-shadow, opacity, transform; }
+:focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; }
+.editorial { font-family: var(--font-newsreader), Georgia, serif; letter-spacing: -.025em; }
+.container-page { width: min(100% - 2rem, 76rem); margin-inline: auto; }
+.eyebrow { font-size: .72rem; line-height: 1rem; letter-spacing: .11em; text-transform: uppercase; font-weight: 650; color: var(--muted-foreground); }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; } }

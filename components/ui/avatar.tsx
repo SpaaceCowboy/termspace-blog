@@ -1,0 +1,20 @@
+import { cn } from "@/lib/utils";
+export function Avatar({
+  initials,
+  className,
+}: {
+  initials: string;
+  className?: string;
+}) {
+  return (
+    <span
+      aria-hidden
+      className={cn(
+        "inline-flex size-9 shrink-0 items-center justify-center rounded-full border border-border bg-muted font-serif text-sm font-semibold text-foreground",
+        className,
+      )}
+    >
+      {initials}
+    </span>
+  );
+}
