@@ -1,12 +1,194 @@
 @import "tailwindcss";
 @import "./tokens.css";
-* { border-color: var(--border); }
-html { scroll-behavior: smooth; }
-body { background: var(--background); color: var(--foreground); font-family: var(--font-geist), sans-serif; text-rendering: optimizeLegibility; }
-::selection { background: oklch(70% .11 45 / .35); }
-a, button, input, select { transition-duration: var(--duration-fast); transition-property: color, background-color, border-color, box-shadow, opacity, transform; }
-:focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; }
-.editorial { font-family: var(--font-newsreader), Georgia, serif; letter-spacing: -.025em; }
-.container-page { width: min(100% - 2rem, 76rem); margin-inline: auto; }
-.eyebrow { font-size: .72rem; line-height: 1rem; letter-spacing: .11em; text-transform: uppercase; font-weight: 650; color: var(--muted-foreground); }
-@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; } }
+
+@theme {
+  --font-sans: var(--font-geist), ui-sans-serif, sans-serif;
+  --font-serif: var(--font-newsreader), Georgia, serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  --color-background: var(--background);
+  --color-background-deep: var(--background-deep);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-soft: var(--primary-soft);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent-soft: var(--accent-soft);
+  --color-spark: var(--spark);
+  --color-verified: var(--verified);
+  --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-destructive: var(--destructive);
+  --color-info: var(--info);
+
+  --radius-sm: 0.35rem;
+  --radius-md: 0.6rem;
+  --radius-lg: 0.9rem;
+  --radius-xl: 1.25rem;
+
+  --shadow-soft: var(--shadow-soft);
+  --shadow-lift: var(--shadow-lift);
+  --shadow-plasma: var(--glow-plasma);
+  --shadow-signal: var(--glow-signal);
+
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+
+  --breakpoint-xs: 30rem;
+  --container-content: 76rem;
+  --container-copy: 44rem;
+}
+
+* {
+  border-color: var(--border);
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: dark;
+}
+html.light {
+  color-scheme: light;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist), sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+::selection {
+  background: var(--selection);
+}
+
+a,
+button,
+input,
+select {
+  transition-duration: var(--duration-fast);
+  transition-timing-function: var(--ease-out-quart);
+  transition-property: color, background-color, border-color, box-shadow, opacity, transform;
+}
+
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* --- typography -------------------------------------------------------- */
+.editorial {
+  font-family: var(--font-newsreader), Georgia, serif;
+  letter-spacing: -0.025em;
+}
+
+.container-page {
+  width: min(100% - 2rem, 76rem);
+  margin-inline: auto;
+}
+
+.eyebrow {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-size: 0.7rem;
+  line-height: 1rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  font-weight: 600;
+  color: var(--muted-foreground);
+}
+
+/* Plasma → Ion sweep. The single signature gradient of the brand. */
+.text-plasma {
+  background: linear-gradient(102deg, var(--primary) 0%, var(--spark) 52%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.rule-plasma {
+  background: linear-gradient(90deg, transparent, var(--primary), var(--spark), transparent);
+}
+
+/* --- surfaces ---------------------------------------------------------- */
+.panel {
+  background: color-mix(in oklab, var(--surface) 82%, transparent);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+}
+
+.grid-field {
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+.noise::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E");
+}
+
+/* --- motion primitives ------------------------------------------------- */
+@keyframes ts-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, var(--rise-from, 22px), 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes ts-marquee {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+
+@keyframes ts-pulse-ring {
+  0% { opacity: 0.85; transform: scale(1); }
+  70%, 100% { opacity: 0; transform: scale(2.4); }
+}
+
+@keyframes ts-drift {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -14px, 0); }
+}
+
+@keyframes ts-scan {
+  from { transform: translate3d(0, -100%, 0); }
+  to { transform: translate3d(0, 900%, 0); }
+}
+
+.animate-marquee { animation: ts-marquee var(--marquee-duration, 42s) linear infinite; }
+.animate-drift { animation: ts-drift 7s var(--ease-out-quart) infinite; }
+
+/* --- accessibility ----------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

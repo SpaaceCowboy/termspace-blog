@@ -7,13 +7,13 @@ export const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          "bg-primary text-primary-foreground hover:bg-[oklch(49%_.14_40)] shadow-sm",
+          "bg-primary text-primary-foreground hover:bg-primary-hover shadow-sm",
         secondary:
           "border border-border-strong bg-surface text-foreground hover:bg-muted",
         ghost: "text-foreground hover:bg-muted",
         outline:
           "border border-primary text-primary hover:bg-primary hover:text-primary-foreground",
-        destructive: "bg-destructive text-white hover:opacity-90",
+        destructive: "bg-destructive text-background hover:opacity-90",
       },
       size: {
         sm: "min-h-9 px-3 text-xs",

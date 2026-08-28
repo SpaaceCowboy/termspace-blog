@@ -5,16 +5,17 @@ import { Logo } from "@/components/layout/logo";
 import { Showroom } from "./showroom";
 export const metadata: Metadata = { title: "Design system" };
 const colors = [
-  ["Canvas", "bg-background", "oklch(95.8% .018 80)"],
-  ["Surface", "bg-surface", "oklch(98.7% .009 82)"],
-  ["Raised", "bg-surface-raised", "oklch(99.5% .005 82)"],
-  ["Foreground", "bg-foreground", "oklch(22.5% .012 80)"],
-  ["Muted", "bg-muted", "oklch(92.4% .022 78)"],
-  ["Primary", "bg-primary", "oklch(55.5% .145 40)"],
-  ["Accent", "bg-accent", "oklch(54% .065 270)"],
-  ["Success", "bg-success", "oklch(49% .075 135)"],
-  ["Warning", "bg-warning", "oklch(55% .115 70)"],
-  ["Destructive", "bg-destructive", "oklch(51% .155 25)"],
+  ["Void", "bg-background", "oklch(14.5% .022 286)"],
+  ["Surface", "bg-surface", "oklch(18.5% .026 286)"],
+  ["Raised", "bg-surface-raised", "oklch(23% .03 288)"],
+  ["Foreground", "bg-foreground", "oklch(96% .01 286)"],
+  ["Muted", "bg-muted", "oklch(26% .026 286)"],
+  ["Plasma / primary", "bg-primary", "oklch(68% .195 292)"],
+  ["Signal / accent", "bg-accent", "oklch(80% .135 196)"],
+  ["Ion / spark", "bg-spark", "oklch(72% .215 340)"],
+  ["Verified", "bg-success", "oklch(82% .175 152)"],
+  ["Caution", "bg-warning", "oklch(83% .15 85)"],
+  ["Alert", "bg-destructive", "oklch(66% .205 22)"],
 ];
 const checks = [
   "Brand fit",

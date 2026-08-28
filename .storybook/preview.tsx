@@ -8,7 +8,7 @@ const preview: Preview = {
   parameters: {
     layout: "centered",
     a11y: { test: "todo" },
-    backgrounds: { options: { cream: { name: "Cream", value: "#F6F1E8" }, dark: { name: "Dark", value: "#1C1B18" } } },
+    backgrounds: { options: { void: { name: "Void", value: "#090913" }, daylight: { name: "Daylight", value: "#f7f7fb" } } },
   },
   decorators: [(Story) => <div className="min-w-[320px] max-w-[900px] p-6"><Story /></div>],
 };

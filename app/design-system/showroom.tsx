@@ -97,7 +97,7 @@ export function Showroom() {
             <label className="flex items-center gap-2 text-sm">
               <Checkbox.Root
                 defaultChecked
-                className="flex size-5 items-center justify-center rounded-sm border border-input bg-surface data-[state=checked]:bg-primary data-[state=checked]:text-white"
+                className="flex size-5 items-center justify-center rounded-sm border border-input bg-surface data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
               >
                 <Checkbox.Indicator>
                   <Check size={14} />
@@ -121,7 +121,7 @@ export function Showroom() {
             <label className="flex items-center gap-3 text-sm">
               Verified only
               <Switch.Root className="h-6 w-11 rounded-full bg-border-strong p-0.5 data-[state=checked]:bg-primary">
-                <Switch.Thumb className="block size-5 rounded-full bg-white transition-transform data-[state=checked]:translate-x-5" />
+                <Switch.Thumb className="block size-5 rounded-full bg-background transition-transform data-[state=checked]:translate-x-5" />
               </Switch.Root>
             </label>
           </div>
@@ -338,7 +338,7 @@ export function Showroom() {
               <button
                 key={`${x}-${i}`}
                 disabled={i === 0}
-                className={`min-h-10 min-w-10 rounded-md px-3 text-sm ${x === "1" ? "bg-primary text-white" : "hover:bg-muted"} disabled:opacity-40`}
+                className={`min-h-10 min-w-10 rounded-md px-3 text-sm ${x === "1" ? "bg-primary text-primary-foreground" : "hover:bg-muted"} disabled:opacity-40`}
               >
                 {x}
               </button>

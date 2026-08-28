@@ -1,40 +1,128 @@
-@theme {
-  --font-sans: var(--font-geist), ui-sans-serif, sans-serif;
-  --font-serif: var(--font-newsreader), Georgia, serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
-  --color-background: var(--background); --color-foreground: var(--foreground);
-  --color-surface: var(--surface); --color-surface-raised: var(--surface-raised);
-  --color-muted: var(--muted); --color-muted-foreground: var(--muted-foreground);
-  --color-primary: var(--primary); --color-primary-foreground: var(--primary-foreground);
-  --color-accent: var(--accent); --color-accent-foreground: var(--accent-foreground);
-  --color-border: var(--border); --color-border-strong: var(--border-strong);
-  --color-input: var(--input); --color-ring: var(--ring); --color-success: var(--success);
-  --color-warning: var(--warning); --color-destructive: var(--destructive); --color-info: var(--info);
-  --radius-sm: .35rem; --radius-md: .6rem; --radius-lg: .9rem; --radius-xl: 1.25rem;
-  --shadow-soft: 0 1px 2px oklch(22% .02 70 / .05), 0 8px 24px oklch(22% .02 70 / .05);
-  --shadow-lift: 0 2px 5px oklch(22% .02 70 / .06), 0 18px 42px oklch(22% .02 70 / .10);
-  --breakpoint-xs: 30rem; --container-content: 76rem; --container-copy: 44rem;
-}
+/* ============================================================================
+   TermSpace design tokens — "Signal & Void"
+   ----------------------------------------------------------------------------
+   A terminal for the AI era: signal separated from noise.
+
+   Hue strategy
+     Void     285  violet-cast neutrals — never grey, never cream
+     Plasma   292  primary. Intelligence + premium without blue's ubiquity
+     Signal   196  technical accent. Precision, live wire, metadata
+     Ion      340  gradient partner only. Never a flat fill
+     Verified 152  SEMANTIC LOCK — trust, safety, verification. Nothing else
+     Caution   82  Alert 22
+
+   Discipline: Plasma is the only colour allowed to cover large areas. Signal
+   stays on small technical elements. Ion exists exclusively inside gradients.
+   Verified never decorates — if it is green, it is a trust claim.
+   ========================================================================== */
+
 :root {
   --font-geist: "Geist Variable";
   --font-geist-mono: "Geist Mono Variable";
   --font-newsreader: "Newsreader Variable";
-  --background: oklch(95.8% .018 80); --foreground: oklch(22.5% .012 80);
-  --surface: oklch(98.7% .009 82); --surface-raised: oklch(99.5% .005 82);
-  --muted: oklch(92.4% .022 78); --muted-foreground: oklch(46% .018 75);
-  --primary: oklch(55.5% .145 40); --primary-foreground: oklch(99% .005 80);
-  --accent: oklch(54% .065 270); --accent-foreground: oklch(99% .005 80);
-  --border: oklch(86.5% .025 78); --border-strong: oklch(74.5% .028 75);
-  --input: oklch(83% .025 78); --ring: oklch(55.5% .145 40);
-  --success: oklch(49% .075 135); --warning: oklch(55% .115 70);
-  --destructive: oklch(51% .155 25); --info: oklch(52% .09 250);
-  --overlay: oklch(18% .015 70 / .55); --duration-fast: 150ms; --duration-slow: 220ms;
+
+  /* motion ------------------------------------------------------------- */
+  --duration-fast: 160ms;
+  --duration-slow: 320ms;
+  --duration-scene: 640ms;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+
+  /* geometry ----------------------------------------------------------- */
+  --radius-card: 0.9rem;
 }
+
+/* ---------------------------------------------------------------------------
+   DARK — "Void". The default. Plasma reads as emission, not paint.
+   ------------------------------------------------------------------------ */
+:root,
 .dark {
-  --background: oklch(19% .012 75); --foreground: oklch(94% .014 80);
-  --surface: oklch(23% .014 75); --surface-raised: oklch(27% .016 75);
-  --muted: oklch(29% .018 75); --muted-foreground: oklch(72% .02 78);
-  --primary: oklch(65% .14 42); --primary-foreground: oklch(18% .015 75);
-  --accent: oklch(69% .07 270); --accent-foreground: oklch(18% .015 75);
-  --border: oklch(34% .02 75); --border-strong: oklch(48% .025 75); --input: oklch(42% .02 75);
+  --background: oklch(14.5% 0.022 286);
+  --background-deep: oklch(10.5% 0.020 286);
+  --surface: oklch(18.5% 0.026 286);
+  --surface-raised: oklch(23% 0.03 288);
+  --foreground: oklch(96% 0.01 286);
+
+  --muted: oklch(26% 0.026 286);
+  --muted-foreground: oklch(73% 0.024 286);
+
+  --border: oklch(30% 0.028 286);
+  --border-strong: oklch(54% 0.036 288);
+  --input: oklch(52% 0.032 286);
+
+  --primary: oklch(68% 0.195 292);
+  --primary-foreground: oklch(13% 0.03 292);
+  --primary-hover: oklch(74% 0.185 292);
+  --primary-soft: oklch(30% 0.085 292);
+
+  --accent: oklch(80% 0.135 196);
+  --accent-foreground: oklch(15% 0.04 220);
+  --accent-soft: oklch(30% 0.06 200);
+
+  --spark: oklch(72% 0.215 340);
+  --verified: oklch(82% 0.175 152);
+
+  --success: oklch(82% 0.175 152);
+  --warning: oklch(83% 0.15 85);
+  --destructive: oklch(66% 0.205 22);
+  --info: oklch(80% 0.135 196);
+
+  --ring: oklch(74% 0.185 292);
+  --overlay: oklch(10% 0.02 286 / 0.72);
+
+  --selection: oklch(68% 0.195 292 / 0.32);
+  --grid-line: oklch(100% 0 0 / 0.045);
+
+  --shadow-soft: 0 1px 2px oklch(8% 0.02 286 / 0.5), 0 8px 24px oklch(8% 0.02 286 / 0.45);
+  --shadow-lift: 0 2px 6px oklch(8% 0.02 286 / 0.5), 0 22px 48px oklch(8% 0.02 286 / 0.55);
+  --glow-plasma: 0 0 0 1px oklch(68% 0.195 292 / 0.35), 0 8px 34px oklch(68% 0.195 292 / 0.34);
+  --glow-signal: 0 0 28px oklch(80% 0.135 196 / 0.32);
+}
+
+/* ---------------------------------------------------------------------------
+   LIGHT — "Daylight Void". Hand-tuned, not an inversion. Same violet cast so
+   the brand survives the switch; ink deepened so Plasma stays legible on paper.
+   ------------------------------------------------------------------------ */
+.light {
+  --background: oklch(97.6% 0.006 286);
+  --background-deep: oklch(94.5% 0.012 286);
+  --surface: oklch(99.3% 0.003 286);
+  --surface-raised: oklch(100% 0 0);
+  --foreground: oklch(19% 0.028 286);
+
+  --muted: oklch(94% 0.011 286);
+  --muted-foreground: oklch(45% 0.026 286);
+
+  --border: oklch(89.5% 0.012 286);
+  --border-strong: oklch(62% 0.024 286);
+  --input: oklch(62% 0.018 286);
+
+  --primary: oklch(50% 0.225 292);
+  --primary-foreground: oklch(99% 0.004 286);
+  --primary-hover: oklch(44% 0.225 292);
+  --primary-soft: oklch(94% 0.035 292);
+
+  --accent: oklch(50% 0.115 210);
+  --accent-foreground: oklch(99% 0.004 286);
+  --accent-soft: oklch(94% 0.03 205);
+
+  --spark: oklch(55% 0.235 340);
+  --verified: oklch(48% 0.135 152);
+
+  --success: oklch(48% 0.135 152);
+  --warning: oklch(56% 0.135 75);
+  --destructive: oklch(52% 0.2 25);
+  --info: oklch(50% 0.115 210);
+
+  --ring: oklch(50% 0.225 292);
+  --overlay: oklch(19% 0.028 286 / 0.45);
+
+  --selection: oklch(50% 0.225 292 / 0.2);
+  --grid-line: oklch(19% 0.028 286 / 0.05);
+
+  --shadow-soft: 0 1px 2px oklch(30% 0.03 286 / 0.06), 0 8px 24px oklch(30% 0.03 286 / 0.07);
+  --shadow-lift: 0 2px 6px oklch(30% 0.03 286 / 0.08), 0 22px 48px oklch(30% 0.03 286 / 0.12);
+  --glow-plasma: 0 0 0 1px oklch(50% 0.225 292 / 0.22), 0 10px 30px oklch(50% 0.225 292 / 0.2);
+  --glow-signal: 0 0 24px oklch(50% 0.115 210 / 0.22);
 }

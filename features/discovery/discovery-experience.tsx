@@ -128,7 +128,7 @@ export function DiscoveryExperience() {
           onCheckedChange={setVerified}
           className="h-6 w-11 rounded-full bg-border-strong p-0.5 data-[state=checked]:bg-primary"
         >
-          <Switch.Thumb className="block size-5 rounded-full bg-white shadow transition-transform data-[state=checked]:translate-x-5" />
+          <Switch.Thumb className="block size-5 rounded-full bg-background shadow transition-transform data-[state=checked]:translate-x-5" />
         </Switch.Root>
       </div>
     </div>
