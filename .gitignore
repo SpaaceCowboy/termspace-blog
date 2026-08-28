@@ -34,3 +34,6 @@ Thumbs.db
 
 # deployment metadata
 .vercel/
+
+# session scratch planning (not project docs)
+tasks.md
