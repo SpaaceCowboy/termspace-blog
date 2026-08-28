@@ -35,16 +35,17 @@ export default function DesignSystemPage() {
       <Header />
       <main>
         <section className="container-page py-16">
-          <p className="eyebrow">termspace design language · concept 01</p>
+          <p className="eyebrow">termspace design language · signal &amp; void</p>
           <div className="mt-5 grid gap-8 md:grid-cols-[1fr_.7fr]">
             <h1 className="editorial text-5xl font-medium leading-[1.02] sm:text-6xl">
-              Warmth for the craft.
+              Signal for the craft.
               <br />
               Clarity for the choice.
             </h1>
             <p className="self-end text-base leading-7 text-muted-foreground">
               An editorial marketplace system built to make technical products
-              feel understandable, comparable, and worthy of trust.
+              feel understandable, comparable, and worthy of trust — on a
+              violet-cast void that reads as emission rather than paint.
             </p>
           </div>
         </section>
@@ -171,17 +172,18 @@ export default function DesignSystemPage() {
                   Is this the right shelf for the work?
                 </h2>
                 <p className="mt-5 leading-7 text-muted-foreground">
-                  The concept is distinctive through its editorial serif,
-                  disciplined terracotta accent, technical mono details, and
+                  The concept is distinctive through its editorial serif, a
+                  disciplined plasma accent, technical mono details, and
                   product-information-first composition. Trust comes from
                   explicit compatibility, permissions, versioning, and scan
                   status—not decorative security claims.
                 </p>
                 <p className="mt-4 leading-7 text-muted-foreground">
-                  It retains the requested warmth through cream surfaces and
-                  natural color, while differing from Claude through denser
-                  marketplace comparison patterns, squared badges, modular grid
-                  structure, and a commerce-specific information architecture.
+                  Colour is used semantically rather than decoratively. Plasma
+                  is the only hue permitted to cover large areas, Signal stays
+                  on technical metadata, Ion exists only inside gradients, and
+                  Verified green is reserved for trust claims — if something is
+                  green here, it is an assertion about safety, never a garnish.
                 </p>
                 <div className="mt-7 grid gap-5 sm:grid-cols-2">
                   <Decision
