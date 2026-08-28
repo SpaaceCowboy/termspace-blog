@@ -1,28 +1,51 @@
 import Link from "next/link";
+import { ShieldCheck } from "lucide-react";
 import { Logo } from "./logo";
+
+const COLUMNS = [
+  { heading: "Marketplace", links: ["Explore", "Collections", "New releases"] },
+  { heading: "Create", links: ["Start selling", "Creator guide", "Quality standards"] },
+  { heading: "Company", links: ["About", "Journal", "Support"] },
+] as const;
+
 export function Footer() {
   return (
-    <footer className="mt-24 border-t bg-surface">
-      <div className="container-page grid gap-10 py-12 md:grid-cols-[2fr_1fr_1fr_1fr]">
+    <footer className="relative isolate mt-24 overflow-hidden border-t border-border bg-surface/40">
+      {/* A last, quiet echo of the hero's plasma so the page closes on the
+          same note it opened with. */}
+      <div
+        aria-hidden
+        className="absolute inset-x-0 top-0 -z-10 h-64 opacity-40"
+        style={{
+          backgroundImage:
+            "radial-gradient(50% 100% at 20% 0%, color-mix(in oklab, var(--primary) 20%, transparent), transparent 70%), radial-gradient(45% 100% at 82% 0%, color-mix(in oklab, var(--accent) 14%, transparent), transparent 72%)",
+        }}
+      />
+
+      <div className="container-page grid gap-10 py-14 md:grid-cols-[2fr_1fr_1fr_1fr]">
         <div>
           <Logo concept="pure" />
-          <p className="mt-3 max-w-xs text-sm text-muted-foreground">
+          <p className="mt-4 max-w-xs text-sm leading-6 text-muted-foreground">
             The marketplace for AI building blocks. Carefully made, clearly
             explained.
           </p>
+          <p className="mt-5 inline-flex items-center gap-2 rounded-full border border-verified/30 bg-verified/10 px-3 py-1.5 font-mono text-[11px] uppercase tracking-widest text-verified">
+            <ShieldCheck size={12} />
+            Permissions on every listing
+          </p>
         </div>
-        {[
-          ["Marketplace", "Explore", "Collections", "New releases"],
-          ["Create", "Start selling", "Creator guide", "Quality standards"],
-          ["Company", "About", "Journal", "Support"],
-        ].map(([h, ...links]) => (
-          <div key={h}>
-            <h3 className="text-sm font-semibold">{h}</h3>
-            <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
-              {links.map((x) => (
-                <li key={x}>
-                  <Link href="/explore" className="hover:text-primary">
-                    {x}
+
+        {COLUMNS.map((column) => (
+          <div key={column.heading}>
+            <h3 className="eyebrow">{column.heading}</h3>
+            <ul className="mt-4 space-y-2.5 text-sm">
+              {column.links.map((link) => (
+                <li key={link}>
+                  <Link
+                    href="/explore"
+                    className="text-muted-foreground transition-colors hover:text-primary"
+                  >
+                    {link}
                   </Link>
                 </li>
               ))}
@@ -30,8 +53,11 @@ export function Footer() {
           </div>
         ))}
       </div>
-      <div className="border-t py-5 text-center text-xs text-muted-foreground">
-        © 2026 termspace · Concept prototype · Local mock data only
+
+      <div className="border-t border-border/70 py-5">
+        <p className="container-page font-mono text-[11px] text-muted-foreground">
+          © 2026 termspace · Concept prototype · Local mock data only
+        </p>
       </div>
     </footer>
   );
