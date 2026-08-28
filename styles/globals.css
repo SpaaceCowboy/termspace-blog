@@ -228,9 +228,24 @@ select {
   opacity: 1;
 }
 
+/* --- hero 3D stage -------------------------------------------------------
+   A resting tilt is baked in so the object reads as dimensional before the
+   cursor ever arrives; pointer and scroll add on top of it. No transition
+   here on purpose - the pointer values are already eased upstream, so a
+   transition would only fight them. */
+.ts-stage {
+  transform:
+    rotateX(calc(-3deg + var(--rx, 0deg) + var(--progress, 0) * 16deg))
+    rotateY(calc(-9deg + var(--ry, 0deg)))
+    translateY(calc(var(--progress, 0) * -26px));
+  will-change: transform;
+}
+
 /* --- decode text --------------------------------------------------------- */
+/* Kept to opacity only: the headline it runs on is gradient-clipped text,
+   and setting `color` there would knock out the background-clip. */
 [data-decoding] {
-  color: color-mix(in oklab, var(--primary) 72%, var(--foreground));
+  opacity: 0.86;
 }
 
 /* --- accessibility ------------------------------------------------------- */
@@ -238,6 +253,7 @@ select {
   html { scroll-behavior: auto; }
   .ts-reveal { opacity: 1 !important; transform: none !important; }
   .ts-tilt { transform: none !important; }
+  .ts-stage { transform: rotateX(-3deg) rotateY(-9deg) !important; }
   *,
   *::before,
   *::after {
