@@ -19,6 +19,13 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Scroll reveals are opacity-gated by JS. Without JS there is no
+            observer to un-gate them, so hand no-script readers the content. */}
+        <noscript>
+          <style>{".ts-reveal{opacity:1!important;transform:none!important}"}</style>
+        </noscript>
+      </head>
       <body>
         <Providers>{children}</Providers>
       </body>
