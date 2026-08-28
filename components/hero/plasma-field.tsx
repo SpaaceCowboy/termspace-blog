@@ -160,7 +160,10 @@ export function PlasmaField({ className }: { className?: string }) {
   // Held in a ref so a theme switch updates the uniforms on the next frame
   // instead of tearing down and rebuilding the whole GL program.
   const paletteRef = useRef<Palette>(PALETTES.dark);
-  paletteRef.current = PALETTES[resolvedTheme === "light" ? "light" : "dark"];
+
+  useEffect(() => {
+    paletteRef.current = PALETTES[resolvedTheme === "light" ? "light" : "dark"];
+  }, [resolvedTheme]);
 
   useEffect(() => {
     if (prefersReducedMotion) return;

@@ -27,23 +27,19 @@ type Props = {
  *      hear the sentence and never the noise;
  *   3. the scrambling layer, painted absolutely over the top and aria-hidden.
  *
- * Under reduced motion the scramble never starts and layer 3 is simply the
- * finished text.
+ * The scramble starts inside a timeout rather than in the effect body, so the
+ * server-rendered markup is the finished sentence and there is no synchronous
+ * state write during mount. Under reduced motion it never starts at all and
+ * the finished text is what renders.
  */
-export function DecodeText({ text, className, delay = 140, speed = 32 }: Props) {
+export function DecodeText({ text, className, delay = 60, speed = 32 }: Props) {
   const prefersReducedMotion = useReducedMotion();
-  const [display, setDisplay] = useState(text);
-  const [isDecoding, setIsDecoding] = useState(false);
+  const [scrambled, setScrambled] = useState<string | null>(null);
   const frameRef = useRef(0);
 
   useEffect(() => {
-    if (prefersReducedMotion) {
-      setDisplay(text);
-      setIsDecoding(false);
-      return;
-    }
+    if (prefersReducedMotion) return;
 
-    setIsDecoding(true);
     let resolved = 0;
     let elapsed = 0;
     let last = performance.now();
@@ -57,7 +53,12 @@ export function DecodeText({ text, className, delay = 140, speed = 32 }: Props) 
         resolved += 1;
       }
 
-      setDisplay(
+      if (resolved >= text.length) {
+        setScrambled(null);
+        return;
+      }
+
+      setScrambled(
         text
           .split("")
           .map((char, index) => {
@@ -67,12 +68,7 @@ export function DecodeText({ text, className, delay = 140, speed = 32 }: Props) 
           .join(""),
       );
 
-      if (resolved < text.length) {
-        frameRef.current = requestAnimationFrame(step);
-      } else {
-        setDisplay(text);
-        setIsDecoding(false);
-      }
+      frameRef.current = requestAnimationFrame(step);
     };
 
     const startTimer = window.setTimeout(() => {
@@ -86,6 +82,8 @@ export function DecodeText({ text, className, delay = 140, speed = 32 }: Props) 
     };
   }, [text, delay, speed, prefersReducedMotion]);
 
+  const isDecoding = scrambled !== null;
+
   return (
     <span className={cn("relative inline-block", className)}>
       {/* Layout holder. visibility:hidden keeps it out of the a11y tree. */}
@@ -98,7 +96,7 @@ export function DecodeText({ text, className, delay = 140, speed = 32 }: Props) 
         data-decoding={isDecoding ? "" : undefined}
         className="absolute inset-0 whitespace-pre-wrap"
       >
-        {display}
+        {scrambled ?? text}
       </span>
     </span>
   );

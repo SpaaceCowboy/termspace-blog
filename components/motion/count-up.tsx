@@ -31,21 +31,17 @@ export function CountUp({
 }: Props) {
   const { ref, isInView } = useInView<HTMLSpanElement>({ threshold: 0.4 });
   const prefersReducedMotion = useReducedMotion();
-  const [current, setCurrent] = useState(0);
+  const [animated, setAnimated] = useState(0);
 
   useEffect(() => {
-    if (!isInView) return;
-    if (prefersReducedMotion) {
-      setCurrent(value);
-      return;
-    }
+    if (!isInView || prefersReducedMotion) return;
 
     let frame = 0;
     const start = performance.now();
 
     const step = (now: number) => {
       const progress = Math.min(1, (now - start) / duration);
-      setCurrent(value * easeOutExpo(progress));
+      setAnimated(value * easeOutExpo(progress));
       if (progress < 1) frame = requestAnimationFrame(step);
     };
 
@@ -53,6 +49,9 @@ export function CountUp({
     return () => cancelAnimationFrame(frame);
   }, [isInView, value, duration, prefersReducedMotion]);
 
+  // Derived rather than synced into state: under reduced motion the final
+  // value is simply what we render, with no effect involved.
+  const current = prefersReducedMotion ? value : animated;
   const formatted =
     decimals > 0
       ? current.toFixed(decimals)

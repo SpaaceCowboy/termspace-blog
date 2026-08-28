@@ -181,6 +181,14 @@ select {
 .animate-marquee { animation: ts-marquee var(--marquee-duration, 42s) linear infinite; }
 .animate-drift { animation: ts-drift 7s var(--ease-out-quart) infinite; }
 
+/* Each line of the pinned process panel re-enters when the step changes.
+   React remounts them (the key includes the value), so the animation replays
+   on its own without any imperative restart. */
+.ts-panel-line {
+  --rise-from: 7px;
+  animation: ts-rise 460ms var(--ease-out-expo) backwards;
+}
+
 /* --- scroll reveal ------------------------------------------------------
    Opacity + transform only, so a reveal never reflows the page (CLS stays 0).
    The reduced-motion block below drops the travel and shows content instantly. */

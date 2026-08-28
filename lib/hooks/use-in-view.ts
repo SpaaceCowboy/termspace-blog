@@ -27,9 +27,12 @@ export function useInView<T extends HTMLElement = HTMLDivElement>({
     const node = ref.current;
     if (!node) return;
 
+    // No observer (very old browser, or a test environment without the
+    // polyfill): show the content rather than leaving it gated forever.
+    // Deferred to a frame so it is not a synchronous setState in an effect.
     if (typeof IntersectionObserver === "undefined") {
-      setIsInView(true);
-      return;
+      const fallback = requestAnimationFrame(() => setIsInView(true));
+      return () => cancelAnimationFrame(fallback);
     }
 
     const observer = new IntersectionObserver(

@@ -1,327 +1,355 @@
 import Link from "next/link";
 import {
   ArrowRight,
-  Search,
+  ArrowUpRight,
   ShieldCheck,
   FileCheck2,
   RefreshCw,
   Store,
-  Compass,
-  Download,
   Quote,
+  ScrollText,
 } from "lucide-react";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
+import { Hero } from "@/components/hero/hero";
+import { ConsoleSearch } from "@/components/sections/console-search";
+import { Process } from "@/components/sections/process";
+import { Reveal } from "@/components/motion/reveal";
+import { TiltCard } from "@/components/motion/tilt-card";
+import { Magnetic } from "@/components/motion/magnetic";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { ProductCard } from "@/components/marketplace/product-card";
 import { CreatorIdentity } from "@/components/marketplace/product-parts";
 import { products, creators, categories } from "@/lib/mock-data";
+
 const collections = [
   {
     title: "Tools for careful research",
     copy: "Evidence-first workflows that keep sources, caveats, and reasoning visible.",
-    tone: "bg-accent/10",
+    count: 84,
   },
   {
     title: "Ship better software",
     copy: "Review, accessibility, and database tools made by practicing engineers.",
-    tone: "bg-success/10",
+    count: 212,
   },
   {
     title: "Find the words that work",
-    copy: "Brand and conversion systems grounded in customer language—not hype.",
-    tone: "bg-primary/10",
+    copy: "Brand and conversion systems grounded in customer language, not hype.",
+    count: 67,
   },
 ];
+
+const trustFacts = [
+  {
+    icon: FileCheck2,
+    title: "Human-readable permissions",
+    copy: "Every listing states what it reads, writes and calls out to — in a sentence, not a config file.",
+  },
+  {
+    icon: RefreshCw,
+    title: "Visible update history",
+    copy: "Every version, with notes from the person who shipped it. Pin the one you inspected.",
+  },
+  {
+    icon: ScrollText,
+    title: "Licence on the label",
+    copy: "Commercial use, redistribution and attribution answered before you reach checkout.",
+  },
+];
+
 export default function Home() {
+  const featured = products.filter((product) => product.featured);
+
   return (
     <>
       <Header />
       <main>
-        <section className="container-page grid items-center gap-12 py-16 md:grid-cols-[1.15fr_.85fr] md:py-24">
-          <div>
-            <p className="eyebrow">The marketplace for AI building blocks</p>
-            <h1 className="editorial mt-5 max-w-2xl text-5xl font-medium leading-[.98] sm:text-6xl">
-              Better building blocks for better AI.
-            </h1>
-            <p className="mt-6 max-w-xl text-lg leading-8 text-muted-foreground">
-              Discover trusted prompts, skills, agents, MCP servers, and AI
-              tools—created by people who know how to make models work.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/explore" className={buttonVariants({ size: "lg" })}>
-                Explore marketplace <ArrowRight size={17} />
-              </Link>
-              <Button variant="secondary" size="lg">
-                Start selling
-              </Button>
-            </div>
-          </div>
-          <div className="relative border-y border-border py-8 md:border-l md:border-y-0 md:pl-10">
-            <Quote className="text-primary" size={28} />
-            <blockquote className="editorial mt-4 text-2xl leading-9">
-              “A good AI product should tell you what it does, what it touches,
-              and why you can trust it.”
-            </blockquote>
-            <p className="mt-5 text-sm text-muted-foreground">
-              The termspace quality standard
-            </p>
-            <dl className="mt-8 grid grid-cols-2 gap-4 border-t pt-5 text-sm">
-              <div>
-                <dt className="text-muted-foreground">Every listing</dt>
-                <dd className="mt-1 font-semibold">Compatibility declared</dd>
-              </div>
-              <div>
-                <dt className="text-muted-foreground">Verified products</dt>
-                <dd className="mt-1 font-semibold">Safety reviewed</dd>
-              </div>
-            </dl>
-          </div>
+        <Hero />
+
+        {/* --- the console --------------------------------------------------- */}
+        <section className="border-b border-border bg-surface/30 py-12">
+          <ConsoleSearch />
         </section>
-        <section className="border-y bg-surface py-8">
-          <div className="container-page">
-            <form action="/explore" className="relative mx-auto max-w-4xl">
-              <Search
-                className="absolute left-5 top-1/2 -translate-y-1/2 text-muted-foreground"
-                size={21}
-              />
-              <input
-                name="q"
-                aria-label="Search marketplace"
-                placeholder="What do you want AI to do better?"
-                className="h-16 w-full rounded-lg border border-border-strong bg-background pl-14 pr-32 text-base shadow-soft focus:outline-none focus:ring-2 focus:ring-ring"
-              />
-              <button className="absolute right-2 top-2 h-12 rounded-md bg-primary px-5 text-sm font-semibold text-primary-foreground">
-                Search
-              </button>
-            </form>
-            <div className="mt-4 flex flex-wrap justify-center gap-x-5 gap-y-2 text-xs text-muted-foreground">
-              {[
-                "Skills",
-                "Agents",
-                "MCP servers",
-                "Prompts",
-                "Developer tools",
-              ].map((x) => (
-                <Link
-                  href={`/explore?type=${x}`}
-                  key={x}
-                  className="hover:text-primary"
-                >
-                  {x}
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-        <section className="container-page py-20">
-          <div className="flex items-end justify-between">
+
+        {/* --- featured ------------------------------------------------------ */}
+        <section className="container-page py-20 lg:py-28">
+          <Reveal className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <p className="eyebrow">Chosen with care</p>
-              <h2 className="editorial mt-2 text-4xl">
+              <h2 className="editorial mt-3 text-[clamp(2rem,1.2rem+2.4vw,3.2rem)] leading-[1.05]">
                 Featured building blocks
               </h2>
             </div>
             <Link
               href="/explore"
-              className="hidden items-center gap-1 text-sm font-semibold sm:flex"
+              className="group inline-flex items-center gap-1.5 text-sm font-semibold text-primary"
             >
-              View all <ArrowRight size={15} />
+              View all {products.length * 47} listings
+              <ArrowRight
+                size={15}
+                className="transition-transform duration-300 group-hover:translate-x-1"
+              />
             </Link>
-          </div>
-          <div className="mt-8 grid gap-5 md:grid-cols-3">
-            {products
-              .filter((p) => p.featured)
-              .map((p) => (
-                <ProductCard key={p.id} product={p} variant="expanded" />
-              ))}
-          </div>
-        </section>
-        <section className="bg-foreground py-20 text-background">
-          <div className="container-page">
-            <p className="eyebrow !text-background/60">Curated collections</p>
-            <div className="mt-8 grid gap-px overflow-hidden rounded-lg bg-background/20 md:grid-cols-3">
-              {collections.map((c, i) => (
-                <Link
-                  href="/explore"
-                  key={c.title}
-                  className="group bg-foreground p-7 hover:bg-background/5"
-                >
-                  <span className="font-mono text-xs text-background/50">
-                    0{i + 1}
-                  </span>
-                  <h3 className="editorial mt-12 text-2xl">{c.title}</h3>
-                  <p className="mt-3 text-sm leading-6 text-background/65">
-                    {c.copy}
-                  </p>
-                  <ArrowRight
-                    className="mt-6 transition-transform group-hover:translate-x-1"
-                    size={18}
-                  />
-                </Link>
-              ))}
-            </div>
+          </Reveal>
+
+          <div className="mt-10 grid gap-5 md:grid-cols-3">
+            {featured.map((product, index) => (
+              <Reveal key={product.id} delay={index * 90}>
+                <TiltCard className="h-full rounded-lg" max={5}>
+                  <ProductCard product={product} variant="expanded" />
+                </TiltCard>
+              </Reveal>
+            ))}
           </div>
         </section>
-        <section className="container-page py-20">
-          <div className="grid gap-12 lg:grid-cols-[.75fr_1.25fr]">
-            <div>
-              <p className="eyebrow">Browse by practice</p>
-              <h2 className="editorial mt-2 text-4xl">
-                Made for work that matters.
+
+        {/* --- how it works (pinned narrative) ------------------------------- */}
+        <Process />
+
+        {/* --- trust --------------------------------------------------------- */}
+        <section className="container-page py-20 lg:py-28">
+          <div className="grid gap-14 lg:grid-cols-[.9fr_1.1fr] lg:gap-20">
+            <Reveal>
+              <span className="inline-flex items-center gap-2 rounded-full border border-verified/30 bg-verified/10 px-3 py-1.5 font-mono text-[11px] uppercase tracking-widest text-verified">
+                <ShieldCheck size={13} />
+                Verified
+              </span>
+              <h2 className="editorial mt-6 text-[clamp(2rem,1.2rem+2.4vw,3.2rem)] leading-[1.05]">
+                Trust is product information.
               </h2>
-              <p className="mt-4 text-muted-foreground">
-                Start with the outcome, not the file format.
+              <p className="mt-5 max-w-md leading-8 text-muted-foreground">
+                Most catalogues bury what a tool actually does inside a
+                paragraph of marketing. We break compatibility, permissions,
+                requirements, licence and safety status into separate fields so
+                you can judge a product before it touches your workflow.
               </p>
-            </div>
-            <div className="grid grid-cols-2 border-l border-t sm:grid-cols-3">
-              {categories.slice(1).map((c, i) => (
-                <Link
-                  href={`/explore?category=${c}`}
-                  key={c}
-                  className="min-h-28 border-b border-r p-4 text-sm font-semibold hover:bg-surface hover:text-primary"
-                >
-                  <span className="font-mono text-xs text-muted-foreground">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <p className="mt-8">{c}</p>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-        <section className="border-y bg-surface py-20">
-          <div className="container-page">
-            <div className="text-center">
-              <p className="eyebrow">Simple by design</p>
-              <h2 className="editorial mt-2 text-4xl">
-                From need to useful in minutes.
-              </h2>
-            </div>
-            <div className="mt-12 grid gap-8 md:grid-cols-3">
-              {[
-                [
-                  Compass,
-                  "Discover",
-                  "Search by outcome and compare fit across platforms and models.",
-                ],
-                [
-                  FileCheck2,
-                  "Verify",
-                  "Preview contents, permissions, requirements, and independent trust signals.",
-                ],
-                [
-                  Download,
-                  "Put it to work",
-                  "Get clear installation instructions and updates from the creator.",
-                ],
-              ].map(([Icon, title, copy], i) => {
-                const I = Icon as typeof Compass;
+              <blockquote className="editorial mt-8 border-l-2 border-primary/50 pl-5 text-xl leading-8">
+                <Quote size={20} className="mb-3 text-primary" />
+                A good AI product should tell you what it does, what it touches,
+                and why you can trust it.
+                <footer className="mt-4 font-sans text-sm not-italic text-muted-foreground">
+                  The termspace quality standard
+                </footer>
+              </blockquote>
+            </Reveal>
+
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
+              {trustFacts.map((fact, index) => {
+                const Icon = fact.icon;
                 return (
-                  <div
-                    key={String(title)}
-                    className="border-t border-border-strong pt-5"
-                  >
-                    <div className="flex items-center justify-between">
-                      <I className="text-primary" />
-                      <span className="font-mono text-xs text-muted-foreground">
-                        0{i + 1}
-                      </span>
-                    </div>
-                    <h3 className="editorial mt-8 text-2xl">{String(title)}</h3>
-                    <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                      {String(copy)}
-                    </p>
-                  </div>
+                  <Reveal key={fact.title} delay={index * 90}>
+                    <TiltCard
+                      className="h-full rounded-xl border border-border bg-surface/70 p-6 backdrop-blur"
+                      max={4}
+                    >
+                      <div className="flex items-start gap-4">
+                        <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-primary-soft text-primary">
+                          <Icon size={18} />
+                        </span>
+                        <div>
+                          <h3 className="font-semibold">{fact.title}</h3>
+                          <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                            {fact.copy}
+                          </p>
+                        </div>
+                      </div>
+                    </TiltCard>
+                  </Reveal>
                 );
               })}
             </div>
           </div>
         </section>
-        <section className="container-page py-20">
-          <div className="grid gap-8 lg:grid-cols-2">
-            <div className="rounded-xl bg-muted p-8">
-              <ShieldCheck size={28} className="text-success" />
-              <h2 className="editorial mt-6 text-3xl">
-                Trust is product information.
+
+        {/* --- collections (inverted, plasma-lit) ---------------------------- */}
+        <section className="relative isolate overflow-hidden border-y border-border bg-background-deep py-20 lg:py-28">
+          <div
+            aria-hidden
+            className="absolute inset-0 -z-10 opacity-70"
+            style={{
+              backgroundImage:
+                "radial-gradient(60% 70% at 12% 0%, color-mix(in oklab, var(--primary) 26%, transparent), transparent 70%), radial-gradient(55% 65% at 88% 100%, color-mix(in oklab, var(--spark) 20%, transparent), transparent 72%)",
+            }}
+          />
+          <div className="container-page">
+            <Reveal>
+              <p className="eyebrow">Curated collections</p>
+              <h2 className="editorial mt-3 max-w-2xl text-[clamp(2rem,1.2rem+2.4vw,3.2rem)] leading-[1.05]">
+                Shelves assembled by people who use this stuff daily.
               </h2>
-              <p className="mt-3 max-w-lg leading-7 text-muted-foreground">
-                We separate compatibility, permissions, requirements, license,
-                and safety status so you can evaluate a product before it
-                touches your workflow.
+            </Reveal>
+
+            <div className="mt-12 grid gap-4 md:grid-cols-3">
+              {collections.map((collection, index) => (
+                <Reveal key={collection.title} delay={index * 100}>
+                  <Link
+                    href="/explore"
+                    className="group flex h-full flex-col rounded-xl border border-border bg-surface/50 p-7 backdrop-blur transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-plasma"
+                  >
+                    <div className="flex items-start justify-between">
+                      <span className="font-mono text-xs text-muted-foreground">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                      <ArrowUpRight
+                        size={18}
+                        className="text-muted-foreground transition-all duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary"
+                      />
+                    </div>
+                    <h3 className="editorial mt-14 text-2xl leading-tight">
+                      {collection.title}
+                    </h3>
+                    <p className="mt-3 flex-1 text-sm leading-6 text-muted-foreground">
+                      {collection.copy}
+                    </p>
+                    <p className="mt-6 font-mono text-xs text-accent">
+                      {collection.count} listings
+                    </p>
+                  </Link>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* --- browse by practice -------------------------------------------- */}
+        <section className="container-page py-20 lg:py-28">
+          <div className="grid gap-12 lg:grid-cols-[.72fr_1.28fr]">
+            <Reveal>
+              <p className="eyebrow">Browse by practice</p>
+              <h2 className="editorial mt-3 text-[clamp(2rem,1.2rem+2.4vw,3.2rem)] leading-[1.05]">
+                Made for work that matters.
+              </h2>
+              <p className="mt-5 max-w-sm leading-7 text-muted-foreground">
+                Start with the outcome, not the file format.
               </p>
-              <div className="mt-8 grid grid-cols-2 gap-4 text-sm">
-                <p>
-                  <FileCheck2 className="mb-2" size={18} />
-                  Human-readable permissions
-                </p>
-                <p>
-                  <RefreshCw className="mb-2" size={18} />
-                  Visible update history
-                </p>
+            </Reveal>
+
+            <Reveal
+              delay={120}
+              className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-3"
+            >
+              {categories.slice(1).map((category, index) => (
+                <Link
+                  href={`/explore?category=${encodeURIComponent(category)}`}
+                  key={category}
+                  className="group relative min-h-32 bg-background p-5 transition-colors hover:bg-surface"
+                >
+                  <span className="font-mono text-xs text-muted-foreground">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <p className="mt-9 text-sm font-semibold transition-colors group-hover:text-primary">
+                    {category}
+                  </p>
+                  <span
+                    aria-hidden
+                    className="rule-plasma absolute inset-x-0 bottom-0 h-px origin-left scale-x-0 transition-transform duration-500 group-hover:scale-x-100"
+                  />
+                </Link>
+              ))}
+            </Reveal>
+          </div>
+        </section>
+
+        {/* --- creators ------------------------------------------------------ */}
+        <section
+          id="creators"
+          className="border-y border-border bg-surface/40 py-20 lg:py-28"
+        >
+          <div className="container-page">
+            <Reveal>
+              <p className="eyebrow">People worth following</p>
+              <h2 className="editorial mt-3 text-[clamp(2rem,1.2rem+2.4vw,3.2rem)] leading-[1.05]">
+                Featured creators
+              </h2>
+            </Reveal>
+
+            <div className="mt-10 grid gap-4 md:grid-cols-3">
+              {creators.slice(0, 3).map((creator, index) => (
+                <Reveal key={creator.id} delay={index * 90}>
+                  <TiltCard
+                    className="h-full rounded-xl border border-border bg-background/70 p-6"
+                    max={4}
+                  >
+                    <CreatorIdentity creator={creator} />
+                    <p className="mt-4 text-sm leading-6 text-muted-foreground">
+                      {creator.bio}
+                    </p>
+                    <p className="mt-5 font-mono text-xs text-muted-foreground">
+                      {creator.products} products ·{" "}
+                      {creator.followers.toLocaleString()} followers
+                    </p>
+                  </TiltCard>
+                </Reveal>
+              ))}
+            </div>
+
+            <Reveal delay={180} className="mt-12">
+              <div className="grid items-center gap-8 rounded-2xl border border-border bg-background/70 p-8 backdrop-blur md:grid-cols-[1.2fr_.8fr] lg:p-10">
+                <div>
+                  <Store size={26} className="text-primary" />
+                  <h3 className="editorial mt-5 text-2xl sm:text-3xl">
+                    A serious shelf for your best work.
+                  </h3>
+                  <p className="mt-3 max-w-lg leading-7 text-muted-foreground">
+                    Publish with rich previews, version history, compatibility
+                    metadata and a storefront that respects the craft — not a
+                    zip file and a hope.
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-3 md:justify-end">
+                  <Magnetic>
+                    <Button size="lg" className="shadow-plasma">
+                      Read the creator guide
+                    </Button>
+                  </Magnetic>
+                </div>
+              </div>
+            </Reveal>
+          </div>
+        </section>
+
+        {/* --- closing CTA ---------------------------------------------------- */}
+        <section className="container-page py-20 lg:py-28">
+          <Reveal>
+            <div className="relative isolate overflow-hidden rounded-2xl border border-border px-6 py-14 sm:px-12">
+              <div
+                aria-hidden
+                className="absolute inset-0 -z-10"
+                style={{
+                  backgroundImage:
+                    "linear-gradient(115deg, color-mix(in oklab, var(--primary) 22%, transparent), color-mix(in oklab, var(--spark) 16%, transparent) 48%, color-mix(in oklab, var(--accent) 14%, transparent))",
+                }}
+              />
+              <div className="grid items-center gap-8 md:grid-cols-2">
+                <div>
+                  <p className="eyebrow">A quieter, better inbox</p>
+                  <h2 className="editorial mt-3 text-[clamp(1.9rem,1.2rem+2vw,2.9rem)] leading-[1.05]">
+                    One useful release every Friday.
+                  </h2>
+                  <p className="mt-3 max-w-sm text-sm leading-6 text-muted-foreground">
+                    What shipped, what got reviewed, and what is worth your
+                    attention. No launch announcements.
+                  </p>
+                </div>
+                <form className="flex flex-col gap-2 sm:flex-row">
+                  <input
+                    type="email"
+                    required
+                    aria-label="Email address"
+                    placeholder="you@example.com"
+                    className="min-h-12 min-w-0 flex-1 rounded-lg border border-border-strong bg-background/80 px-4 backdrop-blur placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                  />
+                  <button
+                    type="submit"
+                    className={buttonVariants({ size: "lg" })}
+                  >
+                    Subscribe
+                  </button>
+                </form>
               </div>
             </div>
-            <div id="creators" className="rounded-xl border bg-surface p-8">
-              <Store size={28} className="text-primary" />
-              <h2 className="editorial mt-6 text-3xl">
-                A serious shelf for your best work.
-              </h2>
-              <p className="mt-3 leading-7 text-muted-foreground">
-                Publish with rich previews, version history, compatibility
-                metadata, and a storefront that respects the craft.
-              </p>
-              <Button className="mt-7">Read the creator guide</Button>
-            </div>
-          </div>
-        </section>
-        <section className="container-page py-12">
-          <div className="flex items-end justify-between">
-            <div>
-              <p className="eyebrow">People worth following</p>
-              <h2 className="editorial mt-2 text-4xl">Featured creators</h2>
-            </div>
-          </div>
-          <div className="mt-8 grid gap-4 md:grid-cols-3">
-            {creators.slice(0, 3).map((c) => (
-              <article
-                key={c.id}
-                className="border-t border-border-strong py-5"
-              >
-                <CreatorIdentity creator={c} />
-                <p className="mt-4 text-sm leading-6 text-muted-foreground">
-                  {c.bio}
-                </p>
-                <p className="mt-4 text-xs font-semibold">
-                  {c.products} products · {c.followers.toLocaleString()}{" "}
-                  followers
-                </p>
-              </article>
-            ))}
-          </div>
-        </section>
-        <section className="container-page my-20 bg-primary px-6 py-12 text-primary-foreground sm:px-12">
-          <div className="grid items-center gap-8 md:grid-cols-2">
-            <div>
-              <p className="eyebrow !text-primary-foreground/70">
-                A quieter, better inbox
-              </p>
-              <h2 className="editorial mt-2 text-4xl">
-                One useful release every Friday.
-              </h2>
-            </div>
-            <form className="flex gap-2">
-              <input
-                type="email"
-                required
-                aria-label="Email address"
-                placeholder="you@example.com"
-                className="min-h-12 min-w-0 flex-1 rounded-md border border-white/30 bg-white/10 px-4 placeholder:text-white/60 focus:outline-none focus:ring-2 focus:ring-white"
-              />
-              <button className="rounded-md bg-foreground px-5 text-sm font-semibold text-background">
-                Subscribe
-              </button>
-            </form>
-          </div>
+          </Reveal>
         </section>
       </main>
       <Footer />
