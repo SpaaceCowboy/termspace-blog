@@ -51,11 +51,18 @@ export function Hero() {
       />
       {/* Readability scrim. The field is deliberately quiet, but "quiet" is a
           statistical claim about noise — a bright filament can still land
-          under a word. This guarantees the copy column always has ground
-          beneath it at any viewport. */}
+          under a word. This guarantees the copy always has ground beneath it.
+          Two variants, because the layout rotates: on wide screens the copy
+          sits beside the scene so the scrim runs left-to-right, and on narrow
+          screens it stacks above it, so a horizontal scrim would cover the
+          whole hero and there would be no atmosphere left to see. */}
       <div
         aria-hidden
-        className="absolute inset-y-0 left-0 -z-10 w-full bg-gradient-to-r from-background from-45% via-background/85 via-75% to-transparent lg:w-[72%]"
+        className="absolute inset-0 -z-10 bg-gradient-to-b from-background from-30% via-background/70 to-transparent lg:hidden"
+      />
+      <div
+        aria-hidden
+        className="absolute inset-y-0 left-0 -z-10 hidden w-[72%] bg-gradient-to-r from-background from-45% via-background/85 via-75% to-transparent lg:block"
       />
       {/* Grounds the hero into the page instead of ending it on a hard edge. */}
       <div

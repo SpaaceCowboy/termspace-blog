@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { ShieldCheck, Star, Boxes, Lock, GitBranch } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { pointer, subscribePointer } from "@/lib/pointer";
 import { useReducedMotion } from "@/lib/hooks/use-reduced-motion";
 
@@ -52,11 +53,16 @@ export function HeroScene() {
   return (
     <div
       aria-hidden
-      className="pointer-events-none relative mx-auto w-full max-w-lg select-none [perspective:1500px] [perspective-origin:50%_45%]"
+      className="pointer-events-none relative mx-auto w-full max-w-lg select-none px-2 [perspective:1500px] [perspective-origin:50%_45%] sm:px-0"
     >
       <div
         ref={stageRef}
-        className="ts-stage relative aspect-[4/3.6] w-full [transform-style:preserve-3d]"
+        /* The stage height is aspect-driven while the panel inside it is
+           content-driven, so the ratio has to leave room for the tallest the
+           panel gets. On narrow screens the manifest rows are the same height
+           but the box is much shorter, so the panel would otherwise run past
+           the bottom edge and the corner chips would land on top of it. */
+        className="ts-stage relative aspect-[4/5] w-full [transform-style:preserve-3d] sm:aspect-[4/3.6]"
       >
         {/* --- back plane: the grid the object floats above ------------- */}
         <div
@@ -95,7 +101,7 @@ export function HeroScene() {
           </div>
 
           <div className="px-4 py-4 font-mono text-[11.5px] leading-6 sm:text-xs">
-            <p className="text-muted-foreground">
+            <p className="truncate text-muted-foreground">
               <span className="text-accent">$</span> termspace inspect{" "}
               <span className="text-foreground">conversion-copywriter</span>
             </p>
@@ -122,8 +128,14 @@ export function HeroScene() {
         </div>
 
         {/* --- floating chips at increasing depth ---------------------- */}
+        {/* Positions are split by breakpoint. On a wide layout the chips can
+            sit outside the panel's edges; on a narrow one there are no edges
+            to sit outside of, so they move above and below it instead. The
+            Verified chip has nowhere to go on mobile without landing on the
+            manifest text, so it steps out rather than overlapping it — the
+            same claim is already in the panel's own footer line. */}
         <FloatChip
-          className="left-[-6%] top-[6%]"
+          className="left-0 top-0 sm:left-[-6%] sm:top-[6%]"
           z={92}
           delay="0s"
           icon={<Star size={12} className="fill-warning text-warning" />}
@@ -131,7 +143,7 @@ export function HeroScene() {
           sub="184 reviews"
         />
         <FloatChip
-          className="right-[-9%] top-[34%]"
+          className="hidden sm:block sm:right-[-9%] sm:top-[34%]"
           z={132}
           delay="1.1s"
           icon={<ShieldCheck size={12} className="text-verified" />}
@@ -139,7 +151,7 @@ export function HeroScene() {
           sub="safety reviewed"
         />
         <FloatChip
-          className="left-[2%] bottom-[3%]"
+          className="bottom-0 left-0 sm:bottom-[3%] sm:left-[2%]"
           z={112}
           delay="2.2s"
           icon={<Lock size={12} className="text-accent" />}
@@ -147,7 +159,7 @@ export function HeroScene() {
           sub="permission scope"
         />
         <FloatChip
-          className="right-[4%] bottom-[10%]"
+          className="bottom-0 right-0 sm:bottom-[10%] sm:right-[4%]"
           z={64}
           delay="0.6s"
           icon={<GitBranch size={12} className="text-primary" />}
@@ -155,7 +167,7 @@ export function HeroScene() {
           sub="12 versions"
         />
         <FloatChip
-          className="left-[36%] top-[-4%]"
+          className="right-0 top-0 sm:left-[36%] sm:right-auto sm:top-[-4%]"
           z={150}
           delay="1.7s"
           icon={<Boxes size={12} className="text-spark" />}
@@ -179,7 +191,7 @@ type ChipProps = {
 function FloatChip({ className, z, delay, icon, label, sub }: ChipProps) {
   return (
     <div
-      className={`absolute ${className}`}
+      className={cn("absolute", className)}
       style={{ transform: `translateZ(${z}px)` }}
     >
       <div
