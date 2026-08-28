@@ -49,6 +49,14 @@ export function Hero() {
           maskImage: "radial-gradient(120% 90% at 50% 0%, black, transparent 72%)",
         }}
       />
+      {/* Readability scrim. The field is deliberately quiet, but "quiet" is a
+          statistical claim about noise — a bright filament can still land
+          under a word. This guarantees the copy column always has ground
+          beneath it at any viewport. */}
+      <div
+        aria-hidden
+        className="absolute inset-y-0 left-0 -z-10 w-full bg-gradient-to-r from-background from-45% via-background/85 via-75% to-transparent lg:w-[72%]"
+      />
       {/* Grounds the hero into the page instead of ending it on a hard edge. */}
       <div
         aria-hidden
@@ -71,7 +79,8 @@ export function Hero() {
             <span className="block">from scratch.</span>
             <DecodeText
               text="Start from what works."
-              className="text-plasma mt-1 block"
+              className="mt-1 block"
+              textClassName="text-plasma"
               delay={420}
               speed={26}
             />

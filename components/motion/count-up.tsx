@@ -29,7 +29,13 @@ export function CountUp({
   prefix = "",
   decimals = 0,
 }: Props) {
-  const { ref, isInView } = useInView<HTMLSpanElement>({ threshold: 0.4 });
+  // No bottom inset and a low threshold: a stat rail sitting right on the
+  // fold should start climbing as soon as any of it is on screen, not sit
+  // frozen at zero because the default reveal margin excludes it.
+  const { ref, isInView } = useInView<HTMLSpanElement>({
+    threshold: 0.1,
+    rootMargin: "0px",
+  });
   const prefersReducedMotion = useReducedMotion();
   const [animated, setAnimated] = useState(0);
 

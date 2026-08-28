@@ -196,8 +196,8 @@ select {
   opacity: 0;
   transform: translate3d(0, var(--rise-from, 22px), 0);
   transition:
-    opacity 760ms var(--ease-out-expo) var(--rise-delay, 0ms),
-    transform 760ms var(--ease-out-expo) var(--rise-delay, 0ms);
+    opacity 620ms var(--ease-out-expo) var(--rise-delay, 0ms),
+    transform 620ms var(--ease-out-expo) var(--rise-delay, 0ms);
 }
 .ts-reveal[data-revealed] {
   opacity: 1;
@@ -247,6 +247,34 @@ select {
     rotateY(calc(-9deg + var(--ry, 0deg)))
     translateY(calc(var(--progress, 0) * -26px));
   will-change: transform;
+}
+
+/* --- theme toggle --------------------------------------------------------
+   Both icons live in the DOM at once and the theme class picks the visible
+   one, so the toggle renders identically on server and client. They
+   cross-rotate rather than swap, which reads as one mechanism turning over
+   instead of two icons trading places. */
+.ts-theme-icon {
+  position: absolute;
+  transition:
+    transform 480ms var(--ease-spring),
+    opacity 240ms var(--ease-out-quart);
+}
+[data-theme-icon="sun"] {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+[data-theme-icon="moon"] {
+  opacity: 0;
+  transform: rotate(90deg) scale(0.4);
+}
+html.light [data-theme-icon="sun"] {
+  opacity: 0;
+  transform: rotate(-90deg) scale(0.4);
+}
+html.light [data-theme-icon="moon"] {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
 }
 
 /* --- decode text --------------------------------------------------------- */

@@ -8,7 +8,15 @@ const GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#$%*+=~<>/\\{}[]";
 
 type Props = {
   text: string;
+  /** Layout classes for the wrapper (margins, display, width). */
   className?: string;
+  /**
+   * Classes for the layer that actually paints the characters. Anything that
+   * styles the glyphs themselves belongs here, not on `className` — notably
+   * `text-plasma`, whose background-clip only works on the element that owns
+   * the text nodes.
+   */
+  textClassName?: string;
   /** Milliseconds before the first character resolves. */
   delay?: number;
   /** Milliseconds between each character locking into place. */
@@ -32,7 +40,13 @@ type Props = {
  * state write during mount. Under reduced motion it never starts at all and
  * the finished text is what renders.
  */
-export function DecodeText({ text, className, delay = 60, speed = 32 }: Props) {
+export function DecodeText({
+  text,
+  className,
+  textClassName,
+  delay = 60,
+  speed = 32,
+}: Props) {
   const prefersReducedMotion = useReducedMotion();
   const [scrambled, setScrambled] = useState<string | null>(null);
   const frameRef = useRef(0);
@@ -94,7 +108,7 @@ export function DecodeText({ text, className, delay = 60, speed = 32 }: Props) {
       <span
         aria-hidden
         data-decoding={isDecoding ? "" : undefined}
-        className="absolute inset-0 whitespace-pre-wrap"
+        className={cn("absolute inset-0 whitespace-pre-wrap", textClassName)}
       >
         {scrambled ?? text}
       </span>

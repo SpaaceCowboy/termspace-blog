@@ -17,7 +17,7 @@ type Options = {
  */
 export function useInView<T extends HTMLElement = HTMLDivElement>({
   threshold = 0.15,
-  rootMargin = "0px 0px -12% 0px",
+  rootMargin = "0px 0px -6% 0px",
   once = true,
 }: Options = {}) {
   const ref = useRef<T | null>(null);

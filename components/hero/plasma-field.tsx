@@ -83,23 +83,28 @@ void main() {
 
   float field = fbm(uv * 1.9 + r * 1.25 + uPointer * 0.35);
 
-  // Ridged noise: thin bright veins instead of soft blobs.
+  // Ridged noise: thin bright veins instead of soft blobs. The exponent sets
+  // how thin — high enough that the filaments read as structure in the
+  // background rather than as a foreground subject.
   float veins = 1.0 - abs(field * 2.0 - 1.0);
-  veins = pow(clamp(veins, 0.0, 1.0), 5.0);
+  veins = pow(clamp(veins, 0.0, 1.0), 7.0);
 
   vec3 col = mix(uC1, uC2, smoothstep(0.30, 0.78, field + r.x * 0.25));
   col = mix(col, uC3, smoothstep(0.55, 1.00, r.y + veins * 0.5) * 0.8);
-  col += veins * uC3 * 0.35;
+  col += veins * uC3 * 0.22;
 
   // The cursor carries its own light source through the field.
   float d = length(uv - uPointer);
   col += exp(-d * d * 2.6) * uC2 * 0.28;
 
-  float mask = smoothstep(0.18, 0.82, field) * 0.85 + veins * 0.5;
+  float mask = smoothstep(0.18, 0.82, field) * 0.70 + veins * 0.30;
 
   // Vignette keeps the energy off the edges; the scroll term fades the field
   // out so the hero hands attention down the page instead of competing.
-  float vignette = smoothstep(1.35, 0.25, length(uv * vec2(0.72, 1.0)));
+  // Written as 1.0 - smoothstep rather than a reversed-edge smoothstep: GLSL
+  // leaves smoothstep undefined when edge0 >= edge1, and the drivers that
+  // return 0 for it zero the entire field.
+  float vignette = 1.0 - smoothstep(0.35, 1.45, length(uv * vec2(0.55, 1.0)));
   mask *= vignette * uIntensity * (1.0 - uScroll * 0.75);
 
   vec3 result = mix(uBg, col, clamp(mask, 0.0, 1.0));
@@ -126,7 +131,11 @@ const PALETTES: Record<"dark" | "light", Palette> = {
     c2: [0.969, 0.388, 0.808],
     c3: [0.059, 0.847, 0.855],
     bg: [0.0353, 0.0353, 0.0745],
-    intensity: 0.92,
+    // Deliberately low. At full strength the field is genuinely beautiful and
+    // completely unusable — it becomes the subject and the headline becomes
+    // an obstacle in front of it. This is atmosphere, so it stays under the
+    // copy, not over it.
+    intensity: 0.62,
   },
   light: {
     // Light needs a far quieter field. The same energy on paper reads as
@@ -135,7 +144,7 @@ const PALETTES: Record<"dark" | "light", Palette> = {
     c2: [0.757, 0.039, 0.608],
     c3: [0.0, 0.451, 0.529],
     bg: [0.969, 0.969, 0.984],
-    intensity: 0.3,
+    intensity: 0.24,
   },
 };
 
@@ -161,8 +170,14 @@ export function PlasmaField({ className }: { className?: string }) {
   // instead of tearing down and rebuilding the whole GL program.
   const paletteRef = useRef<Palette>(PALETTES.dark);
 
+  const redrawRef = useRef<(() => void) | null>(null);
+
   useEffect(() => {
     paletteRef.current = PALETTES[resolvedTheme === "light" ? "light" : "dark"];
+    // Repaint at once. If the loop happens to be parked (tab hidden, hero
+    // scrolled away) it would otherwise hold the previous theme's palette
+    // until the user came back.
+    redrawRef.current?.();
   }, [resolvedTheme]);
 
   useEffect(() => {
@@ -172,7 +187,11 @@ export function PlasmaField({ className }: { className?: string }) {
     if (!canvas) return;
 
     const attributes: WebGLContextAttributes = {
-      alpha: false,
+      // Transparent rather than opaque-black. An undrawn WebGL buffer with
+      // alpha:false composites as solid black, which is invisible in dark
+      // mode and a black slab in light mode. With alpha:true the canvas's own
+      // bg-background shows through until the first frame lands.
+      alpha: true,
       antialias: false,
       depth: false,
       stencil: false,
@@ -258,19 +277,7 @@ export function PlasmaField({ className }: { className?: string }) {
       gl.uniform2f(uniforms.res, width, height);
     };
 
-    const render = (now: number) => {
-      const delta = Math.min(now - last, 64) / 1000;
-      last = now;
-
-      // Park the loop rather than spinning it. It restarts from the
-      // visibility or intersection handler.
-      if (!isVisible || document.hidden) {
-        frame = 0;
-        return;
-      }
-
-      elapsed += delta;
-
+    const draw = () => {
       const rect = canvas.getBoundingClientRect();
       const scroll = Math.min(
         1,
@@ -293,6 +300,21 @@ export function PlasmaField({ className }: { className?: string }) {
       gl.uniform3fv(uniforms.bg, palette.bg);
 
       gl.drawArrays(gl.TRIANGLES, 0, 3);
+    };
+
+    const render = (now: number) => {
+      const delta = Math.min(now - last, 64) / 1000;
+      last = now;
+
+      // Park the loop rather than spinning it. It restarts from the
+      // visibility or intersection handler.
+      if (!isVisible || document.hidden) {
+        frame = 0;
+        return;
+      }
+
+      elapsed += delta;
+      draw();
       frame = requestAnimationFrame(render);
     };
 
@@ -304,7 +326,16 @@ export function PlasmaField({ className }: { className?: string }) {
 
     resize();
 
-    const resizeObserver = new ResizeObserver(resize);
+    // One synchronous frame before any rAF. drawArrays works in a background
+    // tab even though rAF does not, so the hero is never a blank rectangle —
+    // including when it mounts while the tab is hidden and the loop parks
+    // itself immediately.
+    draw();
+
+    const resizeObserver = new ResizeObserver(() => {
+      resize();
+      draw();
+    });
     resizeObserver.observe(canvas);
 
     const visibilityObserver = new IntersectionObserver(
@@ -316,6 +347,7 @@ export function PlasmaField({ className }: { className?: string }) {
     );
     visibilityObserver.observe(canvas);
 
+    redrawRef.current = draw;
     document.addEventListener("visibilitychange", wake);
 
     // Keep the shared pointer loop alive for as long as the field is mounted.
@@ -325,6 +357,7 @@ export function PlasmaField({ className }: { className?: string }) {
 
     return () => {
       cancelAnimationFrame(frame);
+      redrawRef.current = null;
       document.removeEventListener("visibilitychange", wake);
       resizeObserver.disconnect();
       visibilityObserver.disconnect();
@@ -342,7 +375,11 @@ export function PlasmaField({ className }: { className?: string }) {
   }
 
   return (
-    <canvas ref={canvasRef} aria-hidden className={cn("size-full", className)} />
+    <canvas
+      ref={canvasRef}
+      aria-hidden
+      className={cn("size-full bg-background", className)}
+    />
   );
 }
 
