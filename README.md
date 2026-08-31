@@ -52,6 +52,11 @@ The API container applies committed Prisma migrations before starting. Persisten
 PostgreSQL data is stored in the `blog_pgdata` volume and local media uploads in
 `api_uploads`. Stop the stack with `npm run docker:down`.
 
+If a host port is already in use, set `DB_HOST_PORT`, `API_HOST_PORT`,
+`WEB_HOST_PORT`, or `BLOG_HOST_PORT` in `.env`; container-to-container addresses
+do not change. For example, `DB_HOST_PORT=55433 WEB_HOST_PORT=3100` lets the
+stack coexist with an older local database and frontend.
+
 For production, provide a real `.env` without committing it. Set a strong
 `ADMIN_PASSWORD`, production `CORS_ORIGINS`, `MEDIA_PUBLIC_URL`, and
 `SESSION_COOKIE_DOMAIN=.your-domain.com` when the main site and Blog use sibling

@@ -7,7 +7,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-blog_password}
       POSTGRES_DB: ${POSTGRES_DB:-blog_db}
     ports:
-      - "5433:5432"
+      - "${DB_HOST_PORT:-5433}:5432"
     volumes:
       - blog_pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -38,7 +38,7 @@ services:
       db:
         condition: service_healthy
     ports:
-      - "4001:4001"
+      - "${API_HOST_PORT:-4001}:4001"
     volumes:
       - api_uploads:/app/apps/api/uploads
     command: ["sh", "-c", "npm run prisma:deploy --workspace @termspace/api && npm run start --workspace @termspace/api"]
@@ -61,7 +61,7 @@ services:
       api:
         condition: service_healthy
     ports:
-      - "3000:3000"
+      - "${WEB_HOST_PORT:-3000}:3000"
 
   blog:
     build:
@@ -78,7 +78,7 @@ services:
       api:
         condition: service_healthy
     ports:
-      - "3001:3001"
+      - "${BLOG_HOST_PORT:-3001}:3001"
 
 volumes:
   blog_pgdata:
