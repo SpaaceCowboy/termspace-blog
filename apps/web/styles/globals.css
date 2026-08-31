@@ -70,6 +70,15 @@ body {
   overflow-x: clip;
 }
 
+html[dir="rtl"] body {
+  font-family: var(--font-estedad), var(--font-geist), sans-serif;
+}
+
+html[dir="rtl"] .editorial {
+  font-family: var(--font-estedad), var(--font-newsreader), serif;
+  letter-spacing: 0;
+}
+
 ::selection {
   background: var(--selection);
 }

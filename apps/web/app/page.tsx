@@ -22,6 +22,8 @@ import { ProductCard } from "@/components/marketplace/product-card";
 import { CreatorIdentity } from "@/components/marketplace/product-parts";
 import { getMarketplaceHome } from "@/lib/api";
 import { NewsletterForm } from "@/features/newsletter/newsletter-form";
+import { getLocale } from "@/lib/serverLocale";
+import { copy, localePath } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
@@ -62,6 +64,8 @@ const trustFacts = [
 ];
 
 export default async function Home() {
+  const locale = await getLocale();
+  const t = copy[locale];
   const marketplace = await getMarketplaceHome().catch((error) => { console.error("Marketplace home load failed", error); return null; });
   const products = marketplace?.products ?? [];
   const creators = marketplace?.creators ?? [];
@@ -73,7 +77,7 @@ export default async function Home() {
       <Header />
       <main>
         <Hero />
-        {!marketplace && <p role="alert" className="border-b border-warning/40 bg-warning/10 px-5 py-3 text-center text-sm">Marketplace data is temporarily unavailable. Please try again shortly.</p>}
+        {!marketplace && <p role="alert" className="border-b border-warning/40 bg-warning/10 px-5 py-3 text-center text-sm">{t.unavailable}</p>}
 
         {/* --- the console --------------------------------------------------- */}
         <section className="border-b border-border bg-surface/30 py-12">
@@ -84,16 +88,16 @@ export default async function Home() {
         <section className="container-page py-20 lg:py-28">
           <Reveal className="flex flex-wrap items-end justify-between gap-4">
             <div>
-              <p className="eyebrow">Chosen with care</p>
+              <p className="eyebrow">{t.featuredEyebrow}</p>
               <h2 className="editorial mt-3 text-[clamp(2rem,1.2rem+2.4vw,3.2rem)] leading-[1.05]">
-                Featured building blocks
+                {t.featuredTitle}
               </h2>
             </div>
             <Link
-              href="/explore"
+              href={localePath("/explore", locale)}
               className="group inline-flex items-center gap-1.5 text-sm font-semibold text-primary"
             >
-              View all {marketplace?.total ?? 0} listings
+              {t.viewAll.replace("{count}", String(marketplace?.total ?? 0))}
               <ArrowRight
                 size={15}
                 className="transition-transform duration-300 group-hover:translate-x-1"
@@ -182,7 +186,7 @@ export default async function Home() {
           />
           <div className="container-page">
             <Reveal>
-              <p className="eyebrow">Curated collections</p>
+              <p className="eyebrow">{t.collectionsEyebrow}</p>
               <h2 className="editorial mt-3 max-w-2xl text-[clamp(2rem,1.2rem+2.4vw,3.2rem)] leading-[1.05]">
                 Shelves assembled by people who use this stuff daily.
               </h2>
@@ -224,7 +228,7 @@ export default async function Home() {
         <section className="container-page py-20 lg:py-28">
           <div className="grid gap-12 lg:grid-cols-[.72fr_1.28fr]">
             <Reveal>
-              <p className="eyebrow">Browse by practice</p>
+              <p className="eyebrow">{t.practiceEyebrow}</p>
               <h2 className="editorial mt-3 text-[clamp(2rem,1.2rem+2.4vw,3.2rem)] leading-[1.05]">
                 Made for work that matters.
               </h2>
@@ -239,7 +243,7 @@ export default async function Home() {
             >
               {categories.map((category, index) => (
                 <Link
-                  href={`/explore?category=${encodeURIComponent(category.name)}`}
+                  href={`${localePath("/explore", locale)}?category=${encodeURIComponent(category.name)}`}
                   key={category.slug}
                   className="group relative min-h-32 bg-background p-5 transition-colors hover:bg-surface"
                 >
@@ -266,9 +270,9 @@ export default async function Home() {
         >
           <div className="container-page">
             <Reveal>
-              <p className="eyebrow">People worth following</p>
+              <p className="eyebrow">{t.creatorsEyebrow}</p>
               <h2 className="editorial mt-3 text-[clamp(2rem,1.2rem+2.4vw,3.2rem)] leading-[1.05]">
-                Featured creators
+                {t.featuredCreators}
               </h2>
             </Reveal>
 
@@ -331,9 +335,9 @@ export default async function Home() {
               />
               <div className="grid items-center gap-8 md:grid-cols-2">
                 <div>
-                  <p className="eyebrow">A quieter, better inbox</p>
+                  <p className="eyebrow">{t.inboxEyebrow}</p>
                   <h2 className="editorial mt-3 text-[clamp(1.9rem,1.2rem+2vw,2.9rem)] leading-[1.05]">
-                    One useful release every Friday.
+                    {t.inboxTitle}
                   </h2>
                   <p className="mt-3 max-w-sm text-sm leading-6 text-muted-foreground">
                     What shipped, what got reviewed, and what is worth your

@@ -1,6 +1,8 @@
 "use client";
 import { ThemeProvider } from "next-themes";
 import { MarketplaceSessionProvider } from "@/features/account/marketplace-session";
+import { LocaleProvider } from "@/lib/locale-context";
+import type { Locale } from "@/lib/i18n";
 
 /**
  * Dark is the declared default rather than "system": the Void ground is what
@@ -12,10 +14,10 @@ import { MarketplaceSessionProvider } from "@/features/account/marketplace-sessi
  * cross-rotating icons are the switch's whole affordance, and that flag would
  * suppress them along with everything else.
  */
-export function Providers({ children }: { children: React.ReactNode }) {
+export function Providers({ children, locale }: { children: React.ReactNode; locale: Locale }) {
   return (
     <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-      <MarketplaceSessionProvider>{children}</MarketplaceSessionProvider>
+      <LocaleProvider locale={locale}><MarketplaceSessionProvider>{children}</MarketplaceSessionProvider></LocaleProvider>
     </ThemeProvider>
   );
 }

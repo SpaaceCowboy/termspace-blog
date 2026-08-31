@@ -10,6 +10,7 @@ import { Magnetic } from "@/components/motion/magnetic";
 import { Marquee } from "@/components/motion/marquee";
 import { buttonVariants } from "@/components/ui/button";
 import { useScrollProgress } from "@/lib/hooks/use-scroll-progress";
+import { useLocale } from "@/lib/locale-context";
 
 const STATS = [
   { value: 2847, suffix: "", label: "building blocks listed" },
@@ -29,6 +30,7 @@ const PLATFORMS = [
 ] as const;
 
 export function Hero() {
+  const { t } = useLocale();
   // Writes --progress on the section; the 3D stage reads it to rotate and
   // rise as the hero leaves, so scroll and cursor drive the same object.
   const sectionRef = useScrollProgress<HTMLElement>();
@@ -78,14 +80,14 @@ export function Hero() {
               <span className="absolute inline-flex size-full rounded-full bg-accent opacity-75 [animation:ts-pulse-ring_2.4s_ease-out_infinite]" />
               <span className="relative inline-flex size-1.5 rounded-full bg-accent" />
             </span>
-            The marketplace for AI building blocks
+            {t.marketplace}
           </p>
 
           <h1 className="editorial mt-6 text-[clamp(2.6rem,1.2rem+5.6vw,4.9rem)] font-medium leading-[0.98] tracking-[-0.03em]">
-            <span className="block">Stop prompting</span>
-            <span className="block">from scratch.</span>
+            <span className="block">{t.heroStop}</span>
+            <span className="block">{t.heroScratch}</span>
             <DecodeText
-              text="Start from what works."
+              text={t.heroStart}
               className="mt-1 block"
               textClassName="text-plasma"
               delay={420}
@@ -94,9 +96,7 @@ export function Hero() {
           </h1>
 
           <p className="mt-7 max-w-xl text-lg leading-8 text-muted-foreground">
-            Prompts, skills, agents and MCP servers built by people who already
-            got the model to behave — each one listed with its permissions,
-            compatibility and safety review in plain sight.
+            {t.heroIntro}
           </p>
 
           <div className="mt-9 flex flex-wrap items-center gap-3">
@@ -105,7 +105,7 @@ export function Hero() {
                 href="/explore"
                 className={`${buttonVariants({ size: "lg" })} group shadow-plasma`}
               >
-                Explore the marketplace
+                {t.exploreMarketplace}
                 <ArrowRight
                   size={17}
                   className="transition-transform duration-300 group-hover:translate-x-1"
@@ -118,14 +118,14 @@ export function Hero() {
                 className={buttonVariants({ variant: "secondary", size: "lg" })}
               >
                 <Sparkles size={16} />
-                Sell your work
+                {t.sellWork}
               </Link>
             </Magnetic>
           </div>
 
           <p className="mt-5 flex items-center gap-2 text-sm text-muted-foreground">
             <ShieldCheck size={15} className="text-verified" />
-            Every listing declares what it touches before you install it.
+            {t.declared}
           </p>
 
           {/* --- live stat rail --------------------------------------------- */}
@@ -155,7 +155,7 @@ export function Hero() {
       {/* --- platform ticker ------------------------------------------------ */}
       <div className="relative border-t border-border/70 bg-background/50 py-4 backdrop-blur">
         <div className="container-page flex items-center gap-6">
-          <span className="eyebrow hidden shrink-0 sm:block">Works with</span>
+          <span className="eyebrow hidden shrink-0 sm:block">{t.worksWith}</span>
           <Marquee duration={38} className="min-w-0 flex-1">
             {PLATFORMS.map((platform) => (
               <span

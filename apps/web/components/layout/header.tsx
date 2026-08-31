@@ -8,12 +8,8 @@ import { ThemeToggle } from "../ui/theme-toggle";
 import { Button, buttonVariants } from "../ui/button";
 import { cn } from "@/lib/utils";
 import { useMarketplaceSession } from "@/features/account/marketplace-session";
-
-const NAV = [
-  { href: "/explore", label: "Explore" },
-  { href: "/design-system", label: "Design system" },
-  { href: "#creators", label: "For creators" },
-] as const;
+import { useLocale } from "@/lib/locale-context";
+import { localePath } from "@/lib/i18n";
 
 /**
  * The header does two things beyond navigation.
@@ -28,6 +24,8 @@ const NAV = [
  * state would make every frame a reconciliation.
  */
 export function Header() {
+  const { locale, t } = useLocale();
+  const NAV = [{ href: "/explore", label: t.explore }, { href: "/design-system", label: t.designSystem }, { href: "#creators", label: t.creators }] as const;
   const [isCondensed, setIsCondensed] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const progressRef = useRef<HTMLDivElement | null>(null);
@@ -79,13 +77,13 @@ export function Header() {
         <p className="flex h-9 items-center justify-center gap-2 px-4 text-center text-xs">
           <span className="size-1.5 rounded-full bg-accent" />
           <span className="text-muted-foreground">
-            New: verified MCP servers with transparent permission reviews
+            {t.announcement}
           </span>
           <Link
-            href="/explore"
+            href={localePath("/explore", locale)}
             className="group inline-flex items-center gap-1 font-semibold text-primary"
           >
-            Explore
+            {t.explore}
             <ArrowRight
               size={12}
               className="transition-transform duration-300 group-hover:translate-x-0.5"
@@ -105,12 +103,12 @@ export function Header() {
 
           <nav
             className="hidden items-center gap-8 text-sm md:flex"
-            aria-label="Primary"
+            aria-label={t.primary}
           >
             {NAV.map((item) => (
               <Link
                 key={item.href}
-                href={item.href}
+                href={item.href.startsWith("#") ? item.href : localePath(item.href, locale)}
                 className="group relative py-1 transition-colors hover:text-primary"
               >
                 {item.label}
@@ -124,9 +122,10 @@ export function Header() {
 
           <div className="flex items-center gap-1">
             <ThemeToggle />
-            <Link href="/account" className={cn(buttonVariants({ variant: "ghost" }), "hidden sm:inline-flex")}>
-              {session.email ?? "Sign in"}
+            <Link href={localePath("/account", locale)} className={cn(buttonVariants({ variant: "ghost" }), "hidden sm:inline-flex")}>
+              {session.email ?? t.signIn}
             </Link>
+            <Link href={locale === "fa" ? "/" : "/fa"} className="hidden px-2 text-xs text-muted-foreground hover:text-primary sm:inline-flex">{t.language}</Link>
             <Link
               href="#creators"
               className={cn(
@@ -134,13 +133,13 @@ export function Header() {
                 "hidden sm:inline-flex",
               )}
             >
-              Start selling
+              {t.startSelling}
             </Link>
             <Button
               variant="ghost"
               size="icon"
               className="md:hidden"
-              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+              aria-label={isMenuOpen ? t.close : t.open}
               aria-expanded={isMenuOpen}
               onClick={() => setIsMenuOpen((open) => !open)}
             >
@@ -161,11 +160,11 @@ export function Header() {
       {/* --- mobile menu ------------------------------------------------- */}
       {isMenuOpen && (
         <div className="sticky top-14 z-30 border-b border-border bg-background/95 backdrop-blur-xl md:hidden">
-          <nav className="container-page flex flex-col py-3" aria-label="Mobile">
+            <nav className="container-page flex flex-col py-3" aria-label={t.mobile}>
             {NAV.map((item) => (
               <Link
                 key={item.href}
-                href={item.href}
+                href={item.href.startsWith("#") ? item.href : localePath(item.href, locale)}
                 onClick={() => setIsMenuOpen(false)}
                 className="border-b border-border/60 py-3 text-sm last:border-0"
               >
@@ -177,7 +176,7 @@ export function Header() {
               onClick={() => setIsMenuOpen(false)}
               className={cn(buttonVariants({ size: "md" }), "mt-3")}
             >
-              Start selling
+              {t.startSelling}
             </Link>
           </nav>
         </div>

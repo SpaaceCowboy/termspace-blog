@@ -1,6 +1,9 @@
+"use client";
 import Link from "next/link";
 import { ShieldCheck } from "lucide-react";
 import { Logo } from "./logo";
+import { useLocale } from "@/lib/locale-context";
+import { localePath } from "@/lib/i18n";
 
 const COLUMNS = [
   { heading: "Marketplace", links: ["Explore", "Collections", "New releases"] },
@@ -9,6 +12,7 @@ const COLUMNS = [
 ] as const;
 
 export function Footer() {
+  const { locale, t } = useLocale();
   return (
     <footer className="relative isolate mt-24 overflow-hidden border-t border-border bg-surface/40">
       {/* A last, quiet echo of the hero's plasma so the page closes on the
@@ -26,8 +30,7 @@ export function Footer() {
         <div>
           <Logo concept="pure" />
           <p className="mt-4 max-w-xs text-sm leading-6 text-muted-foreground">
-            The marketplace for AI building blocks. Carefully made, clearly
-            explained.
+            {t.footer}
           </p>
           <p className="mt-5 inline-flex items-center gap-2 rounded-full border border-verified/30 bg-verified/10 px-3 py-1.5 font-mono text-[11px] uppercase tracking-widest text-verified">
             <ShieldCheck size={12} />
@@ -42,7 +45,7 @@ export function Footer() {
               {column.links.map((link) => (
                 <li key={link}>
                   <Link
-                    href="/explore"
+                    href={localePath("/explore", locale)}
                     className="text-muted-foreground transition-colors hover:text-primary"
                   >
                     {link}
