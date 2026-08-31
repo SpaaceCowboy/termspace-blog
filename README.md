@@ -68,6 +68,11 @@ domain. Existing article, reader, newsletter, and editorial routes serve the
 blog; TermSpace marketplace routes live in their own modules rather than being
 coupled to editorial controllers.
 
+The main frontend supports English and Persian through the same locale pattern
+as Blog: English uses `/`, while Persian uses `/fa` (for example `/fa/explore`
+and `/fa/account`). The web proxy strips the locale prefix internally, sets the
+request locale, and applies RTL document direction and Persian typography.
+
 ## Production subdomain deployment and shared login
 
 The intended production layout is one parent domain with two Next.js surfaces,
