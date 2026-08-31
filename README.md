@@ -37,6 +37,27 @@ npm test
 npm run build
 ```
 
+## Run the complete stack with Docker
+
+Docker Compose runs PostgreSQL, the shared API, the main site, and Blog:
+
+```bash
+cp .env.example .env # optional; defaults are suitable only for local testing
+npm run docker:up
+```
+
+The services are available at `http://localhost:3000` (main site),
+`http://localhost:3001` (Blog), and `http://localhost:4001/api/health` (API).
+The API container applies committed Prisma migrations before starting. Persistent
+PostgreSQL data is stored in the `blog_pgdata` volume and local media uploads in
+`api_uploads`. Stop the stack with `npm run docker:down`.
+
+For production, provide a real `.env` without committing it. Set a strong
+`ADMIN_PASSWORD`, production `CORS_ORIGINS`, `MEDIA_PUBLIC_URL`, and
+`SESSION_COOKIE_DOMAIN=.your-domain.com` when the main site and Blog use sibling
+subdomains. Put TLS and public routing in a reverse proxy in front of the three
+HTTP services; do not expose PostgreSQL publicly.
+
 The API is shared infrastructure, but its route modules remain separated by
 domain. Existing article, reader, newsletter, and editorial routes serve the
 blog; TermSpace marketplace routes live in their own modules rather than being
