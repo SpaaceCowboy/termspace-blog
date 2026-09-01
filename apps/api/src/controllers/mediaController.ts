@@ -6,7 +6,7 @@ import { deleteImage, storeImage } from "../lib/mediaStorage.js";
 const supportedTypes = new Set(["image/jpeg", "image/png", "image/webp", "image/avif"]);
 
 export async function listMedia(_req: Request, res: Response) {
-  const assets = await prisma.mediaAsset.findMany({ orderBy: { createdAt: "desc" }, take: 100 });
+  const assets = await prisma.mediaAsset.findMany({ where: { deletionRequestedAt: null, deletedAt: null }, orderBy: { createdAt: "desc" }, take: 100 });
   res.json({ data: assets });
 }
 
@@ -54,21 +54,39 @@ export async function uploadMedia(req: Request, res: Response) {
 }
 
 export async function removeMedia(req: Request, res: Response) {
-  const asset = await prisma.mediaAsset.findUnique({ where: { id: String(req.params.id) } });
-  if (!asset) {
+  const result = await prisma.$transaction(async (tx) => {
+    const asset = await tx.mediaAsset.findUnique({ where: { id: String(req.params.id) } });
+    if (!asset) return { state: "missing" as const };
+    if (asset.deletedAt) return { state: "deleted" as const };
+
+    const [articleReference, editionReference, revisionReference] = await Promise.all([
+      tx.article.findFirst({ where: { heroImage: asset.url }, select: { id: true } }),
+      tx.edition.findFirst({ where: { coverImage: asset.url }, select: { id: true } }),
+      tx.$queryRaw<{ id: string }[]>`SELECT "id" FROM "ArticleRevision" WHERE "snapshot" ->> 'heroImage' = ${asset.url} LIMIT 1`,
+    ]);
+    if (articleReference || editionReference || revisionReference.length > 0) return { state: "in-use" as const };
+
+    const marked = asset.deletionRequestedAt ? asset : await tx.mediaAsset.update({
+      where: { id: asset.id },
+      data: { deletionRequestedAt: new Date() },
+    });
+    return { state: "ready" as const, asset: marked };
+  }, { isolationLevel: "Serializable" });
+
+  if (result.state === "missing") {
     res.status(404).json({ error: { code: "NOT_FOUND", message: "Media asset not found" } });
     return;
   }
-  const [articleReference, editionReference] = await Promise.all([
-    prisma.article.findFirst({ where: { heroImage: asset.url }, select: { id: true } }),
-    prisma.edition.findFirst({ where: { coverImage: asset.url }, select: { id: true } }),
-  ]);
-  if (articleReference || editionReference) {
-    res.status(409).json({ error: { code: "MEDIA_IN_USE", message: "Media is still referenced by published content" } });
+  if (result.state === "deleted") {
+    res.status(204).send();
+    return;
+  }
+  if (result.state === "in-use") {
+    res.status(409).json({ error: { code: "MEDIA_IN_USE", message: "Media is still referenced by content or revision history" } });
     return;
   }
 
-  await prisma.mediaAsset.delete({ where: { id: asset.id } });
-  await deleteImage(asset.key);
+  await deleteImage(result.asset.key);
+  await prisma.mediaAsset.update({ where: { id: result.asset.id }, data: { deletedAt: new Date() } });
   res.status(204).send();
 }

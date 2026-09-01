@@ -79,24 +79,18 @@ export async function listArticles(req: Request, res: Response) {
   if (search) {
     const normalizedSearch = search.trim().toLowerCase().slice(0, 120);
     if (normalizedSearch) {
-      await prisma.searchQuery.upsert({
-        where: { query: normalizedSearch },
-        create: { query: normalizedSearch },
-        update: { count: { increment: 1 }, lastSearched: new Date() },
-      });
+      const searchConfig = /[\u0600-\u06ff]/u.test(normalizedSearch) ? "simple" : "english";
+      const matches = await prisma.$queryRaw<{ id: string }[]>(Prisma.sql`
+        SELECT "id" FROM "Article"
+        WHERE to_tsvector(${searchConfig}::regconfig, coalesce("title", '') || ' ' || coalesce("excerpt", '') || ' ' || coalesce("content", ''))
+          @@ websearch_to_tsquery(${searchConfig}::regconfig, ${normalizedSearch})
+        ORDER BY ts_rank(
+          to_tsvector(${searchConfig}::regconfig, coalesce("title", '') || ' ' || coalesce("excerpt", '') || ' ' || coalesce("content", '')),
+          websearch_to_tsquery(${searchConfig}::regconfig, ${normalizedSearch})
+        ) DESC
+      `);
+      searchIds = matches.map(({ id }) => id);
     }
-    const searchConfig = /[\u0600-\u06ff]/u.test(search) ? "simple" : "english";
-    const matches = await prisma.$queryRaw<{ id: string }[]>(Prisma.sql`
-      SELECT "id" FROM "Article"
-      WHERE to_tsvector(${searchConfig}::regconfig, coalesce("title", '') || ' ' || coalesce("excerpt", '') || ' ' || coalesce("content", ''))
-        @@ websearch_to_tsquery(${searchConfig}::regconfig, ${search})
-      ORDER BY ts_rank(
-        to_tsvector(${searchConfig}::regconfig, coalesce("title", '') || ' ' || coalesce("excerpt", '') || ' ' || coalesce("content", '')),
-        websearch_to_tsquery(${searchConfig}::regconfig, ${search})
-      ) DESC
-      LIMIT 500
-    `);
-    searchIds = matches.map(({ id }) => id);
   }
 
   const where: Prisma.ArticleWhereInput = {
@@ -107,12 +101,12 @@ export async function listArticles(req: Request, res: Response) {
     ...(searchIds ? { id: { in: searchIds } } : {}),
   };
 
-  const orderBy: Prisma.ArticleOrderByWithRelationInput =
+  const orderBy: Prisma.ArticleOrderByWithRelationInput[] =
     sort === "oldest"
-      ? { publishedAt: "asc" }
+      ? [{ publishedAt: "asc" }, { id: "asc" }]
       : sort === "title"
-        ? { title: "asc" }
-        : { publishedAt: "desc" };
+        ? [{ title: "asc" }, { id: "asc" }]
+        : [{ publishedAt: "desc" }, { id: "desc" }];
 
   const skip = (page - 1) * limit;
 
@@ -143,12 +137,7 @@ export async function listArticles(req: Request, res: Response) {
 }
 
 export async function listPopularSearches(_req: Request, res: Response) {
-  const searches = await prisma.searchQuery.findMany({
-    orderBy: [{ count: "desc" }, { lastSearched: "desc" }],
-    take: 8,
-    select: { query: true, count: true },
-  });
-  res.json({ data: searches });
+  res.json({ data: [] });
 }
 
 export async function getArticleBySlug(req: Request, res: Response) {
