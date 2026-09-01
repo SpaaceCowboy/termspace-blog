@@ -85,13 +85,14 @@ export async function listArticles(req: Request, res: Response) {
         update: { count: { increment: 1 }, lastSearched: new Date() },
       });
     }
+    const searchConfig = /[\u0600-\u06ff]/u.test(search) ? "simple" : "english";
     const matches = await prisma.$queryRaw<{ id: string }[]>(Prisma.sql`
       SELECT "id" FROM "Article"
-      WHERE to_tsvector('english', coalesce("title", '') || ' ' || coalesce("excerpt", '') || ' ' || coalesce("content", ''))
-        @@ websearch_to_tsquery('english', ${search})
+      WHERE to_tsvector(${searchConfig}::regconfig, coalesce("title", '') || ' ' || coalesce("excerpt", '') || ' ' || coalesce("content", ''))
+        @@ websearch_to_tsquery(${searchConfig}::regconfig, ${search})
       ORDER BY ts_rank(
-        to_tsvector('english', coalesce("title", '') || ' ' || coalesce("excerpt", '') || ' ' || coalesce("content", '')),
-        websearch_to_tsquery('english', ${search})
+        to_tsvector(${searchConfig}::regconfig, coalesce("title", '') || ' ' || coalesce("excerpt", '') || ' ' || coalesce("content", '')),
+        websearch_to_tsquery(${searchConfig}::regconfig, ${search})
       ) DESC
       LIMIT 500
     `);
