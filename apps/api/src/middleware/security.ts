@@ -1,5 +1,6 @@
 import rateLimit from "express-rate-limit";
 import type { RequestHandler } from "express";
+import { ADMIN_SESSION_COOKIE, READER_SESSION_COOKIE } from "./auth.js";
 
 const rateLimitResponse = {
   error: { code: "RATE_LIMITED", message: "Too many requests; please try again later" },
@@ -30,7 +31,8 @@ export const csrfProtection: RequestHandler = (req, res, next) => {
     try { return new URL(referer).origin; } catch { return "invalid"; }
   })();
 
-  if (origin && !configuredOrigins().has(origin)) {
+  const hasSessionCookie = Boolean(req.cookies?.[ADMIN_SESSION_COOKIE] || req.cookies?.[READER_SESSION_COOKIE]);
+  if ((hasSessionCookie && !origin) || (origin && !configuredOrigins().has(origin))) {
     res.status(403).json({ error: { code: "CSRF_ORIGIN_REJECTED", message: "Request origin is not allowed" } });
     return;
   }

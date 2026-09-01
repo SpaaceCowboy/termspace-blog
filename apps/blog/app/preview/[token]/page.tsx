@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { api } from "@/lib/api";
+import { api, ApiClientError } from "@/lib/api";
 import { renderMarkdown } from "@/lib/markdown";
 import { getAdminCookieHeader } from "@/lib/serverApi";
 
@@ -12,7 +12,8 @@ export default async function PreviewPage({ params }: { params: Promise<{ token:
   let article;
   try {
     article = (await api.getArticlePreview(token, { cookie: await getAdminCookieHeader() })).data;
-  } catch {
+  } catch (error) {
+    if (!(error instanceof ApiClientError) || error.status !== 404) throw error;
     notFound();
   }
 

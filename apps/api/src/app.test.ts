@@ -95,6 +95,15 @@ describe("API", () => {
     expect(response.body.error.code).toBe("INVALID_CREDENTIALS");
   });
 
+  it("rejects cookie-authenticated mutations without browser provenance", async () => {
+    const response = await request(createApp())
+      .put("/api/readers/profile/password")
+      .set("Cookie", "term_academy_reader=abcdefghijklmnopqrstuvwxyz123456")
+      .send({ currentPassword: "old-password", newPassword: "new-password" });
+    expect(response.status).toBe(403);
+    expect(response.body.error.code).toBe("CSRF_ORIGIN_REJECTED");
+  });
+
   it("does not expose article preview tokens on public detail responses", async () => {
     prismaMock.article.findUnique.mockResolvedValue({
       id: "article-1",
@@ -167,6 +176,7 @@ describe("API", () => {
     const response = await request(createApp())
       .put("/api/readers/profile/password")
       .set("Cookie", "term_academy_reader=abcdefghijklmnopqrstuvwxyz123456")
+      .set("Origin", "http://localhost:3001")
       .send({ currentPassword: "old-password", newPassword: "new-password" });
 
     expect(response.status).toBe(200);
