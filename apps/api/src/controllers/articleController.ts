@@ -47,9 +47,9 @@ function toArticleSummary(article: Prisma.ArticleGetPayload<{ select: typeof art
   };
 }
 
-function toArticleDetail<T extends { tags: { tag: { id: string; name: string; slug: string } }[] }>(article: T) {
+function toArticleDetail<T extends { tags: { tag: { id: string; name: string; slug: string } }[] }>(article: T, includePreviewToken = false) {
   const { tags, previewToken: _previewToken, ...detail } = article as T & { previewToken?: string | null };
-  return { ...detail, tags: tags.map(({ tag }) => tag) };
+  return { ...detail, ...(includePreviewToken ? { previewToken: _previewToken ?? null } : {}), tags: tags.map(({ tag }) => tag) };
 }
 
 async function publishDueArticles() {
@@ -163,6 +163,7 @@ export async function listPopularSearches(_req: Request, res: Response) {
 export async function getArticleBySlug(req: Request, res: Response) {
   await publishDueArticles();
   const slug = String(req.params.slug);
+  const isAdmin = await isAdminRequest(req);
   const article = await prisma.article.findUnique({
     where: { slug },
     select: {
@@ -177,12 +178,12 @@ export async function getArticleBySlug(req: Request, res: Response) {
     return;
   }
 
-  if (!article.published && !(await isAdminRequest(req))) {
+  if (!article.published && !isAdmin) {
     res.status(404).json({ error: { code: "NOT_FOUND", message: "Article not found" } });
     return;
   }
 
-  res.json({ data: toArticleDetail(article) });
+  res.json({ data: toArticleDetail(article, isAdmin) });
 }
 
 export async function getArticlePreview(req: Request, res: Response) {
@@ -194,7 +195,7 @@ export async function getArticlePreview(req: Request, res: Response) {
     res.status(404).json({ error: { code: "NOT_FOUND", message: "Preview not found" } });
     return;
   }
-  res.json({ data: toArticleDetail(article) });
+  res.json({ data: toArticleDetail(article, true) });
 }
 
 export async function createArticle(req: Request, res: Response) {
@@ -227,7 +228,7 @@ export async function createArticle(req: Request, res: Response) {
     select: articleSelect,
   });
 
-  res.status(201).json({ data: toArticleDetail(article) });
+  res.status(201).json({ data: toArticleDetail(article, true) });
 }
 
 export async function updateArticle(req: Request, res: Response) {
@@ -282,7 +283,7 @@ export async function updateArticle(req: Request, res: Response) {
     select: articleSelect,
   });
 
-  res.json({ data: toArticleDetail(article) });
+  res.json({ data: toArticleDetail(article, true) });
 }
 
 export async function listArticleRevisions(req: Request, res: Response) {

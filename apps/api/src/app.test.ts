@@ -122,6 +122,12 @@ describe("API", () => {
     expect(response.body.data.previewToken).toBeUndefined();
   });
 
+  it("requires an administrator session for article previews", async () => {
+    const response = await request(createApp()).get("/api/articles/preview/private-preview-token");
+    expect(response.status).toBe(401);
+    expect(prismaMock.article.findUnique).not.toHaveBeenCalled();
+  });
+
   it("returns a safe reader profile without authentication secrets", async () => {
     prismaMock.readerSession.findFirst.mockResolvedValue({
       id: "session-1",

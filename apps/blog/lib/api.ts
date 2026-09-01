@@ -107,8 +107,10 @@ export const api = {
     });
   },
 
-  async getArticlePreview(token: string): Promise<ArticleDetailResponse> {
-    return apiFetch<ArticleDetailResponse>(`/api/articles/preview/${encodeURIComponent(token)}`);
+  async getArticlePreview(token: string, options: { cookie?: string } = {}): Promise<ArticleDetailResponse> {
+    return apiFetch<ArticleDetailResponse>(`/api/articles/preview/${encodeURIComponent(token)}`, {
+      headers: options.cookie ? { Cookie: options.cookie } : undefined,
+    });
   },
 
   async listPopularSearches(): Promise<{ data: { query: string; count: number }[] }> {
