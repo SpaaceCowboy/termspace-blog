@@ -52,14 +52,6 @@ function toArticleDetail<T extends { tags: { tag: { id: string; name: string; sl
   return { ...detail, ...(includePreviewToken ? { previewToken: _previewToken ?? null } : {}), tags: tags.map(({ tag }) => tag) };
 }
 
-async function publishDueArticles() {
-  const now = new Date();
-  await prisma.article.updateMany({
-    where: { published: false, scheduledAt: { lte: now } },
-    data: { published: true, publishedAt: now, scheduledAt: null },
-  });
-}
-
 type ArticleQuery = {
   page: number;
   limit: number;
@@ -73,8 +65,6 @@ type ArticleQuery = {
 
 export async function listArticles(req: Request, res: Response) {
   const { page, limit, category, tag, series, search, published, sort } = req.query as unknown as ArticleQuery;
-  await publishDueArticles();
-
   if (published !== true && !(await isAdminRequest(req))) {
     res.status(401).json({
       error: {
@@ -161,7 +151,6 @@ export async function listPopularSearches(_req: Request, res: Response) {
 }
 
 export async function getArticleBySlug(req: Request, res: Response) {
-  await publishDueArticles();
   const slug = String(req.params.slug);
   const isAdmin = await isAdminRequest(req);
   const article = await prisma.article.findUnique({
